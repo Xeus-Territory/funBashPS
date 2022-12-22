@@ -1,6 +1,6 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env pwsh 
 
-# 9. Write a Powershell script and a Bash script that enable/disable SSH on a Windows/Linux machine
+# Write a Powershell script and a Bash script that generate a self-signed SSL certificate
 
 param([switch]$Elevated)
 
@@ -19,16 +19,10 @@ if ((Test-Admin) -eq $false)  {
     exit
 }
 
-$mode = Read-Host -prompt "Enable/Disable SSH"
-if ($mode -eq "Enable" -or $mode -eq "enable")
-{
-    Start-Service -name SSDPSRV -force
-    Set-Service -name SSDPSRV -StartupType Manual
-    Get-Service SSDPSRV
-}
-if ($mode -eq "Disable" -or $mode -eq "disable")
-{
-    Stop-Service -name SSDPSRV -force
-    Set-Service -name SSDPSRV -StartupType Disabled
-    Get-Service SSDPSRV
-}
+$dns = Read-Host -prompt "What is the name of the domain u want to generate a self-signed SSL certificate"
+$location = Read-Host -prompt "Where is the location to store the certificate"
+
+New-SelfSignedCertificate -DnsName $dns -CertStoreLocation $location
+
+
+
