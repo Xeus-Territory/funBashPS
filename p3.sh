@@ -28,6 +28,7 @@ else
         echo "Script:" > $name_newfile
         echo "$script" >> $name_newfile
         echo "Result: " >> $name_newfile
+        # $(<blockcommand>) --> Execuatable 
         command=$($script >> $name_newfile)
         cat $name_newfile
     fi

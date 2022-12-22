@@ -6,23 +6,23 @@
 # - List only show .txt files
 # - List files and folders that have been created within 1 day
 
-echo "List all files in the current directory, sorts the output, remove file extensions"
+Write-Host "List all files in the current directory, sorts the output, remove file extensions"
 $list = (Get-Item *).Basename | Sort-Object
-echo $list
-echo ""
-echo ""
+Write-Host $list
+Write-Host ""
+Write-Host ""
 
-echo "List only show .txt files"
+Write-Host "List only show .txt files"
 $txtList = (Get-ChildItem -Path $dir -Filter *.txt |Select -First 1).Name
-echo $txtList
-echo ""
-echo ""
+Write-Host $txtList
+Write-Host ""
+Write-Host ""
 
-echo "List files and folders that have been created within 1 day"
+Write-Host "List files and folders that have been created within 1 day"
 $day_today = (Get-Date).Date
 $1_day_create = Get-ChildItem -Path $dir -Force -Recurse -File -ErrorAction SilentlyContinue | 
 Where-Object { $_.LastWriteTime -ge $day_today } | 
 Sort-Object LastWriteTime -Descending | 
 Format-Table -Wrap
 
-echo $1_day_create
+Write-Host $1_day_create
