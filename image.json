@@ -19,8 +19,13 @@
             "src": "Images/Sun2.png",
             "name": "sun2",
             "hoffset": 250,
-            "woffset": 240
+            "woffset": 250
+        },
+        {
+            "src": "Images/Sun4.png",
+            "name": "sun3",
+            "hoffset": 250,
+            "woffset": 230
         }
-
     ]
 }
