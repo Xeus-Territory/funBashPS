@@ -4,13 +4,13 @@
 
 read -p "which mode do you want to apply ssh: " ssh_mode
 
-if [[ $(($ssh_mode)) = "Enable" && $(($ssh_mode)) = "enable" ]]
+if [[ $ssh_mode = "enable" ]]
 then
     command=$(sudo -i systemctl start ssh)
-    echo "enable for ssh : $command"
+    echo "enable for ssh"
 fi
-if [[ $(($ssh_mode)) = "disable" && $(($ssh_mode)) = "disable" ]]
+if [[ $ssh_mode = "disable" ]]
 then
     command=$(sudo -i systemctl stop ssh)
-    echo "stop for ssh : $command"
+    echo "stop for ssh"
 fi
