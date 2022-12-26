@@ -20,7 +20,16 @@ if [[ -d $folder ]]
 then 
     for filename in $folder/*
     do
-        rm $filename 2> /dev/null || continue
+        if [[ -d $filename ]]
+        then
+            for sub_filename in $filename/*
+            do
+                rm $sub_filename 2> /dev/null || continue
+            done
+        rmdir $filename 2> /dev/null || continue
+        else
+            rm $filename 2> /dev/null || continue
+        fi
     done
     rmdir $folder 2> /dev/null || exit 0
 fi
