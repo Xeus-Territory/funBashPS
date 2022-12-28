@@ -1,6 +1,10 @@
 #!/usr/bin/pwsh 
 
-$version = Read-Host -prompt "What version of node you want to apply"
+param(
+    [string]$version
+)
+
+# $version = Read-Host -prompt "What version of node you want to apply"
 
 if ($version -eq "12" -or $version -eq "14")
 {
