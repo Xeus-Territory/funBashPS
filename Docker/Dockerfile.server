@@ -1,0 +1,6 @@
+FROM nginx:latest
+# Get the config and add it into Nginx image 
+COPY ./conf /
+
+# Executable moving and overwrite nginx.conf default by copy version
+RUN mv nginx.conf /etc/nginx/nginx.conf
