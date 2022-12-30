@@ -1,9 +1,10 @@
 const http = require('http');
 const port = process.env.PORT || 3000;
+const message = process.env.MESSAGE;
 
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
-  const msg = 'Hello Node !! I am Node 12\n'
+  const msg = message
   res.end(msg);
 });
 
