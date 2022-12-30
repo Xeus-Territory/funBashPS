@@ -1,0 +1,10 @@
+version: "3"
+services:
+  nodejs12:
+    image: "nodejs12:v12" 
+    ports:
+      - '3000:3000'
+  nodejs14:
+    image: "nodejs14:v14"
+    ports:
+      - '3001:3001'
