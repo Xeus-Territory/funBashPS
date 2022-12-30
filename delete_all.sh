@@ -1,4 +1,4 @@
 #!/bin/bash
-docker rm -f $(docker ps -a)
+sudo docker rm -f $(docker ps -a)
 
-docker rmi $(docker image list)
+sudo docker rmi $(docker image list)
