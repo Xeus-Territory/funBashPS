@@ -1,8 +1,16 @@
 #!/bin/bash
 
+# Remove docker ps & image
+docker rm -f "$(docker ps -aq)"
+docker rmi nginx_alb:latest
+docker rmi "$(docker image list | grep webpage)"
+
+# Remove the network
+docker network rm "$(docker network list | grep my_network)"
+
 # Move on the src folder and after that execute the docker script
-cp -r $PWD/../src/ $PWD/../Docker/
-cd $PWD/../Docker/ || exit
+cp -r "$PWD"/../src/ "$PWD"/../docker/
+cd "$PWD"/../docker/ || exit
 
 # Pull and create each website with specified name
 docker build -t webpage8001:latest -f Dockerfile.web .
@@ -12,7 +20,7 @@ docker build -t webpage8004:latest -f Dockerfile.web .
 
 rm -rf src/
 
-docker build -t nginx_alb:latest -f Dockerfile.server .
+docker build -t nginx_alb:latest -f Dockerfile.nginx .
 
 cd .. || exit
 

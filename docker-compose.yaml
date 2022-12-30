@@ -16,6 +16,7 @@ services:
       - my_network2
       - my_network3
       - my_network4
+    restart: always
   app1:
     image: webpage8001:latest
     container_name: app1
