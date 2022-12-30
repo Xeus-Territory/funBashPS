@@ -1,0 +1,43 @@
+version: "3"
+networks:
+  network_1:
+  network_2:
+  network_3:
+  network_4:
+services:
+  web_1:
+    image: "web:v1" 
+    expose:
+      - 8001
+    networks:
+      - network_1
+    environment:
+      - MESSAGE="Hello Node 1"
+      - PORT=8001
+  web_2:
+    image: "web:v2"
+    expose:
+      - 8002
+    networks:
+      - network_2
+    environment:
+      - MESSAGE="Hello Node 2"
+      - PORT=8002
+  web_3:
+    image: "web:v3" 
+    expose:
+      - 8003
+    networks:
+      - network_3
+    environment:
+      - MESSAGE="Hello Node 3"
+      - PORT=8003
+  web_4:
+    image: "web:v4"
+    expose:
+      - 8004
+    networks:
+      - network_4
+    environment:
+      - MESSAGE="Hello Node 4"
+      - PORT=8004
