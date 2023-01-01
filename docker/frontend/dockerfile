@@ -1,0 +1,12 @@
+FROM mhart/alpine-node:14
+
+WORKDIR /app
+
+RUN apk add --update curl git zip 
+
+# dockerfile read /src
+COPY ./src/ /app
+
+RUN npm install
+
+CMD ["npm", "start"]
