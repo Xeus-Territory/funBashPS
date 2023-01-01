@@ -1,0 +1,9 @@
+FROM nginx:latest
+
+EXPOSE 8080
+
+# Get the config and add it into Nginx image 
+COPY ./ .
+
+# Moving and overwrite nginx.conf default
+RUN mv nginx.conf /etc/nginx/
