@@ -12,7 +12,8 @@ services:
     image: "nginx:server"
     container_name: nginx
     ports:
-    - 8080:8080
+    - 80:80
+    - 443:443
     networks:
     - network_1
     - network_2
