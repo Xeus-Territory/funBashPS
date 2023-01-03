@@ -1,4 +1,7 @@
 #!/bin/bash
+source try_catch.sh
+export docker_err=100
+export syspath_err=101
 
 # Generate the ssl certificate
 # Write a Powershell script and a Bash script that generate a self-signed SSL certificate
@@ -53,38 +56,56 @@ fail_if_error $?
 openssl x509 -req -days 3650 -in $DOMAIN.csr -signkey $DOMAIN.key -out $DOMAIN.crt
 fail_if_error $?
 
-# Remove docker ps & image
-docker rm -f "$(docker ps -aq)"
-docker rmi nginx_alb:latest
-docker rmi "$(docker image list | grep webpage)"
+try
+(
+  # Remove docker ps & image
+  docker rm -f "$(docker ps -aq)" || true
+  docker rmi nginx_alb:latest || true
+  docker rmi "$(docker image list | grep webpage)" || true
 
-# Remove the network
-docker network rm "$(docker network list | grep my_network)"
+  # Remove the network
+  docker network rm "$(docker network list | grep my_network)" || true
 
-# Move on the src folder and after that execute the docker script
-mv $(ls --ignore=run_setup.sh) "$PWD"/../docker/conf/
-cp -r "$PWD"/../src/ "$PWD"/../docker/
-cd "$PWD"/../docker/ || exit
+  # Move on the src folder and after that execute the docker script
+  # Get the absolution of path
+  abs_path_file_execute=$(readlink -f "${BASH_SOURCE:-$0}")
+  abs_path_folder_script=$(dirname "$abs_path_file_execute")
+  abs_path_folder_root=$(dirname "$(dirname "$abs_path_file_execute")")
+  abs_path_folder_docker="$abs_path_folder_root""/docker/"
+  abs_path_folder_src="$abs_path_folder_root""/src/"
+  mv $(ls $abs_path_folder_script --ignore=run_setup.sh) "$abs_path_folder_docker/conf/" || throw $syspath_err
+  # cp -r "$PWD"/../src/ "$PWD"/../docker/
+  cp -r "$abs_path_folder_src" "$abs_path_folder_docker" || throw $syspath_err
+  # cd "$PWD"/../docker/ || exit
+  cd "$abs_path_folder_docker" || throw $syspath_err
 
-# Pull and create each website with specified name
-docker build -t webpage8001:latest -f Dockerfile.web .
-docker build -t webpage8002:latest -f Dockerfile.web .
-docker build -t webpage8003:latest -f Dockerfile.web .
-docker build -t webpage8004:latest -f Dockerfile.web .
+  # Pull and create each website with specified name
+  docker build -t webpage8001:latest -f Dockerfile.web . || throw $docker_err
+  docker build -t webpage8002:latest -f Dockerfile.web . || throw $docker_err
+  docker build -t webpage8003:latest -f Dockerfile.web . || throw $docker_err
+  docker build -t webpage8004:latest -f Dockerfile.web . || throw $docker_err
 
-rm -rf src/
+  rm -rf src/ || throwErrors
 
-docker build -t nginx_alb:latest -f Dockerfile.nginx .
-cd "conf/" || exit
-rm $(ls --ignore=nginx.conf)
-cd .. || exit
-cd .. || exit
+  docker build -t nginx_alb:latest -f Dockerfile.nginx . || throw $docker_err
 
-docker-compose up -d
+  cd "$abs_path_folder_docker/conf/" || throw $syspath_err
+  rm $(ls --ignore=nginx.conf) || throwErrors $syspath_err
+  cd "$abs_path_folder_root" || throw $syspath_err
 
-# # Docker run with specified name and bind port to local machine
-
-# docker run -d --name webpage8001 -p 8001:3000 webpage8001:latest
-# docker run -d --name webpage8002 -p 8002:3000 webpage8002:latest
-# docker run -d --name webpage8003 -p 8003:3000 webpage8003:latest
-# docker run -d --name webpage8004 -p 8004:3000 webpage8004:latest
+  docker-compose up -d || throw "Unable run docker-compose"
+)
+catch || {
+  case $ex_code in
+    $docker_err)
+      echo "Something went wrong during run docker-command for building"
+    ;;
+    $syspath_err)
+      echo "something went wrong with do in with bash file"
+    ;;
+    *)
+      echo "Unhandled error"
+      throw $ex_code
+    ;;
+    esac
+}
