@@ -1,33 +1,89 @@
 #!/bin/bash
+# Generate cert
 
-# -------- PULL IMAGE ------------
-    # pull image nodejs14
-    docker pull mhart/alpine-node:14
+DOMAIN="$1"
+if [ -z "$DOMAIN" ]; then
+  echo "Usage: $(basename $0) <domain>"
+  exit 11
+fi
 
-    # pull image nGINX
-    docker pull nginx:latest
-# --------------------------------
+fail_if_error() {
+  [ $1 != 0 ] && {
+    unset PASSPHRASE
+    exit 10
+  }
+}
+
+# Generate a passphrase
+export PASSPHRASE=$(head -c 500 /dev/urandom | tr -dc a-z0-9A-Z | head -c 128; echo)
+
+# Certificate details; replace items in angle brackets with your own info
+subj="
+C=VN
+ST=blah
+O=Blah
+localityName=vietnam
+commonName=$DOMAIN
+organizationalUnitName=Blah
+emailAddress=admin@example.com
+"
+
+# Generate the server private key
+openssl genrsa -des3 -out $DOMAIN.key -passout env:PASSPHRASE 2048
+fail_if_error $?
+
+# Generate the CSR
+openssl req \
+    -new \
+    -batch \
+    -subj "$(echo -n "$subj" | tr "\n" "/")" \
+    -key $DOMAIN.key \
+    -out $DOMAIN.csr \
+    -passin env:PASSPHRASE
+fail_if_error $?
+cp $DOMAIN.key $DOMAIN.key.org
+fail_if_error $?
+
+# Strip the password so we don't have to type it every time we restart Apache
+openssl rsa -in $DOMAIN.key.org -out $DOMAIN.key -passin env:PASSPHRASE
+fail_if_error $?
+
+# Generate the cert (good for 10 years)
+openssl x509 -req -days 3650 -in $DOMAIN.csr -signkey $DOMAIN.key -out $DOMAIN.crt
+fail_if_error $?
 
 
-# -------------------------------- CREATE IMAGE ---------------------------------
-    # copy folder /src into folder /docker/frontend for dockerfile can read /src
-    cp -r $(pwd)/../src/ $(pwd)/../docker/frontend/
-
-    # build 4 image WEB by dockerfile
-    docker build -t website:1 $(pwd)/../docker/frontend/
-    docker build -t website:2 $(pwd)/../docker/frontend/
-    docker build -t website:3 $(pwd)/../docker/frontend/
-    docker build -t website:4 $(pwd)/../docker/frontend/
-
-    # remove folder /src out of folder /docker/frontend
-    rm -rf $(pwd)/../docker/frontend/src/
-
-    # build image NGINX by dockerfile 
-    docker build -t nginx:server $(pwd)/../docker/backend/
-#-------------------------------------------------------------------------------
 
 
+big_folder=$(dirname $(dirname $(realpath run.sh)))
+cp $DOMAIN.crt $big_folder/docker/conf/
+cp $DOMAIN.key $big_folder/docker/conf/
+# ----------- CREATE IMAGE ------------
+cd $big_folder/docker
+
+cp -r $big_folder/src/ .
+
+# build 4 image WEB by dockerfile
+docker build -t website:1 -f Dockerfile.web .
+docker build -t website:2 -f Dockerfile.web .
+docker build -t website:3 -f Dockerfile.web .
+docker build -t website:4 -f Dockerfile.web .
+
+# remove folder /src
+rm -rf src/
+
+# build image NGINX by dockerfile 
+docker build -t nginx:server -f Dockerfile.nginx .
+
+rm conf/$DOMAIN.crt conf/$DOMAIN.key
+cd ..
+ 
 # ---------- CREATE CONTAINER ----------------
-    # build 4 container through docker-compose
-    docker-compose up --detach
-# --------------------------------------------
+cd script/
+docker-compose up --detach
+
+rm $DOMAIN.crt $DOMAIN.key $DOMAIN.csr $DOMAIN.key.org
+
+
+
+

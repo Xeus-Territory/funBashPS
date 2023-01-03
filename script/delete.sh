@@ -1,7 +1,10 @@
 #!/bin/bash
 
+# stop container
+docker kill $(docker ps -q)
+
 # remove all container 
-docker rm -f $(docker ps -a)
+docker container prune --force 
 
 # remove all image 
-docker rmi $(docker image list)
+docker image prune -a -f 
