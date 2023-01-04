@@ -2,8 +2,16 @@ FROM nginx:1.23.3
 
 COPY ./conf /
 
-RUN cat nginx.conf > /etc/nginx/conf.d/default.conf
+ARG domain_key
+ENV domain_key=${domain_key}
 
-RUN mv www.example.com.key  /etc/nginx/
+ARG domain_crt
+ENV domain_crt=${domain_crt}
 
-RUN mv www.example.com.crt  /etc/nginx/
+RUN mv *.key  /etc/nginx/
+
+RUN mv *.crt  /etc/nginx/
+ 
+RUN mv nginx.conf default.conf.template
+
+RUN envsubst < default.conf.template > /etc/nginx/conf.d/default.conf
