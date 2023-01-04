@@ -1,9 +1,9 @@
 FROM nginx:1.23.3
 
-# Moving and overwrite nginx.conf default
 COPY ./conf /
 
 RUN cat nginx.conf > /etc/nginx/conf.d/default.conf
 
 RUN mv ori.com.key  /etc/nginx/
+
 RUN mv ori.com.crt  /etc/nginx/
