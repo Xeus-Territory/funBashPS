@@ -1,9 +1,12 @@
 #!/bin/bash
-# Generate cert
 
+big_folder=$(dirname $(dirname $(realpath "$0")))
+
+# ----------- CREATE CERTIFICATE ------------
+cd $big_folder/docker/conf
 DOMAIN="$1"
 if [ -z "$DOMAIN" ]; then
-  echo "Usage: $(basename $0) <domain>"
+  echo "Usage: $(basename $0) with <domain>"
   exit 11
 fi
 
@@ -54,14 +57,10 @@ fail_if_error $?
 
 
 
-
-big_folder=$(dirname $(dirname $(realpath run.sh)))
-cp $DOMAIN.crt $big_folder/docker/conf/
-cp $DOMAIN.key $big_folder/docker/conf/
 # ----------- CREATE IMAGE ------------
 cd $big_folder/docker
 
-cp -r $big_folder/src/ .
+cp -r $big_folder/src/ 
 
 # build 4 image WEB by dockerfile
 docker build -t website:1 -f Dockerfile.web .
@@ -75,14 +74,12 @@ rm -rf src/
 # build image NGINX by dockerfile 
 docker build -t nginx:server -f Dockerfile.nginx .
 
-rm conf/$DOMAIN.crt conf/$DOMAIN.key
-cd ..
+rm conf/$DOMAIN.*
  
-# ---------- CREATE CONTAINER ----------------
-cd script/
-docker-compose up --detach
 
-rm $DOMAIN.crt $DOMAIN.key $DOMAIN.csr $DOMAIN.key.org
+# ---------- CREATE CONTAINER ----------------
+cd $big_folder/script/
+docker-compose up --detach
 
 
 

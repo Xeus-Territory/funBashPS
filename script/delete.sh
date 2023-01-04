@@ -7,4 +7,7 @@ docker kill $(docker ps -q)
 docker container prune --force 
 
 # remove all image 
-docker image prune -a -f 
+docker image prune -a --force
+
+# remove all network
+docker network prune --force  
