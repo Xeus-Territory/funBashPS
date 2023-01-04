@@ -1,18 +1,10 @@
-FROM mhart/alpine-node:14 as webpage 
+FROM node:14
 
-# Working Directory
 WORKDIR /app
+# RUN apk add --update curl git zip 
 
-# Not have permission so need to contain src into that Docker
-COPY ./src /app
+COPY ./src/ /app
 
-# # enrontment msg env variable
-# ARG message=${msg}
-# ENV MESSAGE ${message}
-
-# Install & Build app 
 RUN npm install
 
-CMD [ "npm","start" ]
-
-
+CMD ["npm", "start"]
