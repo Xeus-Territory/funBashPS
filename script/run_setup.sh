@@ -1,5 +1,4 @@
 #!/bin/bash
-source try_catch.sh
 export docker_err=100
 export syspath_err=101
 
@@ -10,6 +9,8 @@ abs_path_folder_root=$(dirname "$(dirname "$abs_path_file_execute")")
 abs_path_folder_docker="$abs_path_folder_root""/docker/"
 abs_path_folder_src="$abs_path_folder_root""/src/"
 abs_path_folder_conf="$abs_path_folder_docker/conf"
+
+source "$abs_path_folder_script/try_catch.sh"
 
 # Generate the ssl certificate
 # Write a Powershell script and a Bash script that generate a self-signed SSL certificate
@@ -98,7 +99,7 @@ docker build -t webpage8004:latest -f Dockerfile.web . || throw $docker_err
 
 rm -rf src/ || throw $syspath_err
 
-docker build -t nginx_alb:latest -f Dockerfile.nginx . || throw $docker_err
+docker build -t nginx_alb:latest --build-arg domain_key=$DOMAIN.key --build-arg domain_crt=$DOMAIN.crt -f Dockerfile.nginx . || throw $docker_err
 
 cd "$abs_path_folder_docker/conf/" || throw $syspath_err
 rm $(ls --ignore=nginx.conf) || throwErrors $syspath_err
