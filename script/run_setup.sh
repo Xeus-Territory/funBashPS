@@ -75,8 +75,6 @@ emailAddress=admin@example.com
             openssl x509 -req -days 3650 -in "$DOMAIN.csr" -signkey "$DOMAIN.key" -out "$DOMAIN.crt"
             fail_if_error $?
 
-            # Go out docker/conf
-            cd $abs_path_folder_root
 
             # -------------------------- CREATE IMAGE --------------------------
             # Get path of function try/catch to catch ERROR
@@ -104,16 +102,13 @@ emailAddress=admin@example.com
             cd "$abs_path_folder_conf" || throw $syspath_err
             rm $(ls --ignore=nginx.conf) || throwErrors $syspath_err
 
-            # Go out docker/conf
-            cd "$abs_path_folder_root" || throw $syspath_err
-
-
             # -------------------------- CREATE CONTAINER --------------------------
+            # Go to root/
+            cd "$abs_path_folder_root" || throw $syspath_err
             docker-compose up -d || true
             ;;
         "Destroy container")
             # Remove container & image & network
-            # docker kill "$(docker ps -a | awk {'print$1'})" || true
             docker kill $(docker ps -aq) ||  true 
             docker container prune --force 
             docker rmi nginx_alb:latest || true
