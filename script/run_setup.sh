@@ -10,27 +10,37 @@ abs_path_folder_docker="$abs_path_folder_root""/docker/"
 abs_path_folder_src="$abs_path_folder_root""/src/"
 abs_path_folder_conf="$abs_path_folder_docker/conf"
 
-source "$abs_path_folder_script/try_catch.sh"
+# Bash Menu Script Example
+echo "---------MENU------------"
+PS3='Please enter your choice: '
+options=("Setup container" "Destroy container" "Quit")
+select opt in "${options[@]}"
+do
+    case $opt in
+        "Setup container")
+            # -------------------------- GENERATE SELF_SIGN SSL CERTIFICATE --------------------------
+            # Go to docker/conf 
+            cd $abs_path_folder_conf
 
-# Generate the ssl certificate
-# Write a Powershell script and a Bash script that generate a self-signed SSL certificate
-DOMAIN="$1"
-if [ -z "$DOMAIN" ]; then
-  echo "Usage: $(basename $0) <domain>"
-  exit 11
-fi
+            # Check input with domain
+            read -p "Input domain you want to create with container: " DOMAIN
+            if [ -z "$DOMAIN" ]; then
+              echo "Usage: $(basename $0) with <domain>"
+              exit 11
+            fi
 
-fail_if_error() {
-  [ $1 != 0 ] && {
-    unset PASSPHRASE
-    exit 10
-  }
-}
+            # Check Error
+            fail_if_error() {
+              [ $1 != 0 ] && {
+                unset PASSPHRASE
+                exit 10
+              }
+            }
 
-# Generate a passphrase
-export PASSPHRASE=$(head -c 500 /dev/urandom | tr -dc a-z0-9A-Z | head -c 128; echo)
+            # Generate a passphrase to create Password random
+            export PASSPHRASE=$(head -c 500 /dev/urandom | tr -dc a-z0-9A-Z | head -c 128; echo)
 
-# Certificate details; replace items in angle brackets with your own info
+            # Certificate details; replace items in angle brackets with your own info
 subj="
 C=VN
 ST=blah
@@ -41,68 +51,73 @@ organizationalUnitName=Blah
 emailAddress=admin@example.com
 "
 
-# Generate the server private key
-openssl genrsa -des3 -out "$abs_path_folder_conf/$DOMAIN.key" -passout env:PASSPHRASE 2048
-fail_if_error $?
+            # Generate the server private key
+            openssl genrsa -des3 -out "$DOMAIN.key" -passout env:PASSPHRASE 2048
+            fail_if_error $?
 
-# Generate the CSR
-openssl req \
-    -new \
-    -batch \
-    -subj "$(echo -n "$subj" | tr "\n" "/")" \
-    -key "$abs_path_folder_conf/$DOMAIN.key" \
-    -out "$abs_path_folder_conf/$DOMAIN.csr" \
-    -passin env:PASSPHRASE
-fail_if_error $?
-cp "$abs_path_folder_conf/$DOMAIN.key" "$abs_path_folder_conf/$DOMAIN.key.org"
-fail_if_error $?
+            # Generate the CSR
+            openssl req \
+                -new \
+                -batch \
+                -subj "$(echo -n "$subj" | tr "\n" "/")" \
+                -key "$DOMAIN.key" \
+                -out "$DOMAIN.csr" \
+                -passin env:PASSPHRASE
+            fail_if_error $?
+            cp "$DOMAIN.key" "$DOMAIN.key.org"
+            fail_if_error $?
 
-# Strip the password so we don't have to type it every time we restart Apache
-openssl rsa -in "$abs_path_folder_conf/$DOMAIN.key.org" -out "$abs_path_folder_conf/$DOMAIN.key" -passin env:PASSPHRASE
-fail_if_error $?
+            # Strip the password so we don't have to type it every time we restart Apache
+            openssl rsa -in "$DOMAIN.key.org" -out "$DOMAIN.key" -passin env:PASSPHRASE
+            fail_if_error $?
 
-# Generate the cert (good for 10 years)
-openssl x509 -req -days 3650 -in "$abs_path_folder_conf/$DOMAIN.csr" -signkey "$abs_path_folder_conf/$DOMAIN.key" -out "$abs_path_folder_conf/$DOMAIN.crt"
-fail_if_error $?
+            # Generate the Certificate (good for 10 years)
+            openssl x509 -req -days 3650 -in "$DOMAIN.csr" -signkey "$DOMAIN.key" -out "$DOMAIN.crt"
+            fail_if_error $?
 
-# Remove docker ps & image
-docker stop "$(docker ps -a)" || true
-docker rm -f "$(docker ps -aq)" || true
-docker rmi nginx_alb:latest || true
-docker rmi "$(docker image list | grep webpage)" || true
 
-# Remove the network
-docker network rm "$(docker network list | grep my_network)" || true
+            # -------------------------- CREATE IMAGE --------------------------
+            # Get path of function try/catch to catch ERROR
+            source "$abs_path_folder_script/try_catch.sh"
 
-# Move on the src folder and after that execute the docker script
-# Solution 1: Using the mv but not working if don't move absolute path
-# mv $(ls $abs_path_folder_script --ignore=run_setup.sh --ignore=try_catch.sh) "$abs_path_folder_docker/conf/" || throw $syspath_err
+            # Go to docker/
+            cd "$abs_path_folder_docker" || throw $syspath_err
 
-# Solution 2: Move with name of Domain --> it work good 
-# mv "$abs_path_folder_script/$DOMAIN.crt" "$abs_path_folder_docker/conf" || throw $syspath_err
-# mv "$abs_path_folder_script/$DOMAIN.key" "$abs_path_folder_docker/conf" || throw $syspath_err
-# mv "$abs_path_folder_script/$DOMAIN.csr" "$abs_path_folder_docker/conf" || throw $syspath_err
-# mv "$abs_path_folder_script/$DOMAIN.key.org" "$abs_path_folder_docker/conf" || throw $syspath_err
+            # Copy src/ into docker/
+            cp -r "$abs_path_folder_src" . || throw $syspath_err
 
-# Solution 3: Create into conf and do not erase smt
+            # Create WEB images with specified name
+            docker build -t webpage8001:latest -f Dockerfile.web . || throw $docker_err
+            docker build -t webpage8002:latest -f Dockerfile.web . || throw $docker_err
+            docker build -t webpage8003:latest -f Dockerfile.web . || throw $docker_err
+            docker build -t webpage8004:latest -f Dockerfile.web . || throw $docker_err
 
-# cp -r "$PWD"/../src/ "$PWD"/../docker/
-cp -r "$abs_path_folder_src" "$abs_path_folder_docker" || throw $syspath_err
-# cd "$PWD"/../docker/ || exit
-cd "$abs_path_folder_docker" || throw $syspath_err
+            # Remove docker/src/
+            rm -rf src/ || throw $syspath_err
 
-# Pull and create each website with specified name
-docker build -t webpage8001:latest -f Dockerfile.web . || throw $docker_err
-docker build -t webpage8002:latest -f Dockerfile.web . || throw $docker_err
-docker build -t webpage8003:latest -f Dockerfile.web . || throw $docker_err
-docker build -t webpage8004:latest -f Dockerfile.web . || throw $docker_err
+            # Create NGINX image 
+            docker build -t nginx_alb:latest --build-arg domain_key=$DOMAIN.key --build-arg domain_crt=$DOMAIN.crt -f Dockerfile.nginx . || throw $docker_err
 
-rm -rf src/ || throw $syspath_err
+            # Go to docker/conf to delete SSL after we create IMAGE
+            cd "$abs_path_folder_conf" || throw $syspath_err
+            rm $(ls --ignore=nginx.conf) || throwErrors $syspath_err
 
-docker build -t nginx_alb:latest --build-arg domain_key=$DOMAIN.key --build-arg domain_crt=$DOMAIN.crt -f Dockerfile.nginx . || throw $docker_err
-
-cd "$abs_path_folder_docker/conf/" || throw $syspath_err
-rm $(ls --ignore=nginx.conf) || throwErrors $syspath_err
-cd "$abs_path_folder_root" || throw $syspath_err
-
-docker-compose up -d || true
+            # -------------------------- CREATE CONTAINER --------------------------
+            # Go to root/
+            cd "$abs_path_folder_root" || throw $syspath_err
+            docker-compose up -d || true
+            ;;
+        "Destroy container")
+            # Remove container & image & network
+            docker kill $(docker ps -aq) ||  true 
+            docker container prune --force 
+            docker rmi nginx_alb:latest || true
+            docker rmi $(docker image list | grep webpage | awk {'print$1'}) || true 
+            docker network rm $(docker network list | grep my_network | awk {'print$1'}) || true
+            ;;
+        "Quit")
+            break
+            ;;
+        *) echo "invalid option $REPLY";;
+    esac
+done
