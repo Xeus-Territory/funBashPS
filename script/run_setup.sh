@@ -108,10 +108,10 @@ emailAddress=admin@example.com
             cd "$abs_path_folder_root" || throw $syspath_err
             # --------------------- DELETE OLD IMAGE IN REGISTRY -------------------
             az acr repository delete --name devopsorient --image nginx_alb:latest -y 2> /dev/null || true
-            az acr repository delete --name devopsorient --image webpage8001:latest 2> /dev/null || true
-            az acr repository delete --name devopsorient --image webpage8002:latest 2> /dev/null || true
-            az acr repository delete --name devopsorient --image webpage8003:latest 2> /dev/null || true
-            az acr repository delete --name devopsorient --image webpage8004:latest 2> /dev/null || true
+            az acr repository delete --name devopsorient --image webpage8001:latest -y 2> /dev/null || true
+            az acr repository delete --name devopsorient --image webpage8002:latest -y 2> /dev/null || true
+            az acr repository delete --name devopsorient --image webpage8003:latest -y 2> /dev/null || true
+            az acr repository delete --name devopsorient --image webpage8004:latest -y 2> /dev/null || true
 
             # --------------------- PUSH NEW IMAGE TO REGISTRY ---------------------
             docker push devopsorient.azurecr.io/webpage8001:latest || throw $docker_err
@@ -121,16 +121,17 @@ emailAddress=admin@example.com
             docker push devopsorient.azurecr.io/nginx_alb:latest || throw $docker_err 
 
             # -------------------------- CREATE CONTAINER --------------------------
-            # docker-compose up -d || true
+            docker-compose up -d || true
             ;;
         "Destroy container")
             # Remove container & image & network
             # docker kill "$(docker ps -a | awk {'print$1'})" || true
-            docker kill $(docker ps -aq) ||  true 
-            docker container prune --force 
-            docker rmi nginx_alb:latest || true
-            docker rmi $(docker image list | grep webpage | awk {'print$1'}) || true 
-            docker network rm $(docker network list | grep my_network | awk {'print$1'}) || true
+            docker kill $(docker ps -aq) 2> /dev/null ||  true 
+            docker container prune --force 2> /dev/null 
+            docker rmi nginx_alb:latest 2> /dev/null || true
+            docker rmi $(docker image list | grep webpage | awk {'print$1'}) 2> /dev/null || true 
+            docker rmi $(docker image list | grep azurecr | awk {'print$3'}) 2> /dev/null || true
+            docker network rm $(docker network list | grep my_network | awk {'print$1'}) 2> /dev/null || true
             ;;
         "Quit")
             break
