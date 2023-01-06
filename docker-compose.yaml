@@ -7,7 +7,7 @@ networks:
 
 services:
   nginx_alb:
-    image: nginx_alb:latest
+    image: devopsorient.azurecr.io/nginx_alb:latest
     container_name: web-server
     ports:
       - 80:80
@@ -19,7 +19,7 @@ services:
       - my_network4
     restart: always
   app1:
-    image: webpage8001:latest
+    image: devopsorient.azurecr.io/webpage8001:latest
     container_name: app1
     expose:
       - 8001
@@ -29,7 +29,7 @@ services:
       - MESSAGE="App 1 !"
       - PORT=8001
   app2:
-    image: webpage8002:latest
+    image: devopsorient.azurecr.io/webpage8002:latest
     container_name: app2
     expose:
       - 8002
@@ -39,7 +39,7 @@ services:
       - MESSAGE="App 2 !"
       - PORT=8002
   app3:
-    image: webpage8003:latest
+    image: devopsorient.azurecr.io/webpage8003:latest
     container_name: app3
     expose:
       - 8003
@@ -49,7 +49,7 @@ services:
       - MESSAGE="App 3 !"
       - PORT=8003
   app4:
-    image: webpage8004:latest
+    image: devopsorient.azurecr.io/webpage8004:latest
     container_name: app4
     expose:
       - 8004

@@ -1,7 +1,6 @@
 FROM node:14
 
 WORKDIR /app
-# RUN apk add --update curl git zip 
 
 COPY ./src/ /app
 
