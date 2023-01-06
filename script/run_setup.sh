@@ -106,6 +106,7 @@ emailAddress=admin@example.com
 
             # Go out docker/conf
             cd "$abs_path_folder_root" || throw $syspath_err
+            
             # --------------------- DELETE OLD IMAGE IN REGISTRY -------------------
             az acr repository delete --name devopsorient --image nginx_alb:latest -y 2> /dev/null || true
             az acr repository delete --name devopsorient --image webpage8001:latest -y 2> /dev/null || true
