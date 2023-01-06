@@ -89,16 +89,16 @@ emailAddress=admin@example.com
             cp -r "$abs_path_folder_src" . || throw $syspath_err
 
             # Create WEB images with specified name
-            docker build -t webpage8001:latest -f Dockerfile.web . || throw $docker_err
-            docker build -t webpage8002:latest -f Dockerfile.web . || throw $docker_err
-            docker build -t webpage8003:latest -f Dockerfile.web . || throw $docker_err
-            docker build -t webpage8004:latest -f Dockerfile.web . || throw $docker_err
+            docker build -t devopsorient.azurecr.io/webpage8001:latest -f Dockerfile.web . || throw $docker_err
+            docker build -t devopsorient.azurecr.io/webpage8002:latest -f Dockerfile.web . || throw $docker_err
+            docker build -t devopsorient.azurecr.io/webpage8003:latest -f Dockerfile.web . || throw $docker_err
+            docker build -t devopsorient.azurecr.io/webpage8004:latest -f Dockerfile.web . || throw $docker_err
 
             # Remove docker/src/
             rm -rf src/ || throw $syspath_err
 
             # Create NGINX image 
-            docker build -t nginx_alb:latest --build-arg domain_key=$DOMAIN.key --build-arg domain_crt=$DOMAIN.crt -f Dockerfile.nginx . || throw $docker_err
+            docker build -t devopsorient.azurecr.io/nginx_alb:latest --build-arg domain_key=$DOMAIN.key --build-arg domain_crt=$DOMAIN.crt -f Dockerfile.nginx . || throw $docker_err
 
             # Go to docker/conf to delete SSL after we create IMAGE
             cd "$abs_path_folder_conf" || throw $syspath_err
@@ -106,10 +106,22 @@ emailAddress=admin@example.com
 
             # Go out docker/conf
             cd "$abs_path_folder_root" || throw $syspath_err
+            # --------------------- DELETE OLD IMAGE IN REGISTRY -------------------
+            az acr repository delete --name devopsorient --image nginx_alb:latest -y 2> /dev/null || true
+            az acr repository delete --name devopsorient --image webpage8001:latest 2> /dev/null || true
+            az acr repository delete --name devopsorient --image webpage8002:latest 2> /dev/null || true
+            az acr repository delete --name devopsorient --image webpage8003:latest 2> /dev/null || true
+            az acr repository delete --name devopsorient --image webpage8004:latest 2> /dev/null || true
 
+            # --------------------- PUSH NEW IMAGE TO REGISTRY ---------------------
+            docker push devopsorient.azurecr.io/webpage8001:latest || throw $docker_err
+            docker push devopsorient.azurecr.io/webpage8002:latest || throw $docker_err
+            docker push devopsorient.azurecr.io/webpage8003:latest || throw $docker_err
+            docker push devopsorient.azurecr.io/webpage8004:latest || throw $docker_err
+            docker push devopsorient.azurecr.io/nginx_alb:latest || throw $docker_err 
 
             # -------------------------- CREATE CONTAINER --------------------------
-            docker-compose up -d || true
+            # docker-compose up -d || true
             ;;
         "Destroy container")
             # Remove container & image & network
