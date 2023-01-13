@@ -1,0 +1,60 @@
+version: "3"
+networks:
+  my_network1:
+  my_network2:
+  my_network3:
+  my_network4:
+
+services:
+  nginx_alb:
+    image: devopsorient.azurecr.io/nginx_alb:latest
+    container_name: web-server
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - my_network1
+      - my_network2
+      - my_network3
+      - my_network4
+    restart: always
+  app1:
+    image: devopsorient.azurecr.io/webpage8001:latest
+    container_name: app1
+    expose:
+      - 8001
+    networks:
+      - my_network1
+    environment:
+      - MESSAGE="App 1 !"
+      - PORT=8001
+  app2:
+    image: devopsorient.azurecr.io/webpage8002:latest
+    container_name: app2
+    expose:
+      - 8002
+    networks:
+      - my_network2
+    environment:
+      - MESSAGE="App 2 !"
+      - PORT=8002
+  app3:
+    image: devopsorient.azurecr.io/webpage8003:latest
+    container_name: app3
+    expose:
+      - 8003
+    networks:
+      - my_network3
+    environment:
+      - MESSAGE="App 3 !"
+      - PORT=8003
+  app4:
+    image: devopsorient.azurecr.io/webpage8004:latest
+    container_name: app4
+    expose:
+      - 8004
+    networks:
+      - my_network4
+    environment:
+      - MESSAGE="App 4 !"
+      - PORT=8004
