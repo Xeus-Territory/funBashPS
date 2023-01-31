@@ -43,7 +43,7 @@ resource "azurerm_virtual_machine_extension" "start_up_script" {
 
   settings = <<SETTINGS
   {
-    "script": "${base64encode(file("${abspath(path.root)}/startup.sh"))}"
+    "script": "${base64encode(file("${dirname(dirname(abspath(path.root)))}/data/userdata.sh"))}"
   }
   SETTINGS
 
