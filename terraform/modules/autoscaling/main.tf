@@ -112,7 +112,7 @@ resource "azurerm_monitor_autoscale_setting" "main" {
 
   notification {
     email {
-      custom_emails = [ "nghia.nguyenduc@orientsoftware.com" ]
+      custom_emails = [ var.email_notification ]
     }
   }
 }
