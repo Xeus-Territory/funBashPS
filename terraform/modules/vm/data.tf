@@ -15,6 +15,6 @@ data "azurerm_user_assigned_identity" "identity" {
 }
 
 data "azurerm_network_interface" "my_terraform_nic" {
-  name = "${local.environment}-nic"
+  name = "${local.environment}-nicVM"
   resource_group_name = data.azurerm_resource_group.current.name
 }

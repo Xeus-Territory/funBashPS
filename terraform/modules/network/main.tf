@@ -7,7 +7,7 @@ resource "azurerm_virtual_network" "my_terraform_network" {
   tags = local.common_tags
 }
 
-# Create the subnet
+# Create the subnet for VMSS
 resource "azurerm_subnet" "my_terraform_network_subnet" {
   name                 = "${local.environment}-subnet"
   resource_group_name  = data.azurerm_resource_group.current.name
@@ -16,16 +16,16 @@ resource "azurerm_subnet" "my_terraform_network_subnet" {
   service_endpoints = [ "Microsoft.Storage" ]
 }
 
-# # Create public IP
-# resource "azurerm_public_ip" "my_terraform_public_ip" {
-#   name                = "${local.environment}-publicIP"
-#   location            = data.azurerm_resource_group.current.location
-#   resource_group_name = data.azurerm_resource_group.current.name
-#   allocation_method   = "Static"
-#   sku = "Standard"
-#   tags = local.common_tags
-# }
+# Create the subnet for VM
+resource "azurerm_subnet" "subnet_VM" {
+  name = "${local.environment}-subnetVM"
+  resource_group_name = data.azurerm_resource_group.current.name
+  virtual_network_name = azurerm_virtual_network.my_terraform_network.name
+  address_prefixes = [ "10.0.3.0/24" ]
+  service_endpoints = ["Microsoft.Storage" ]
+}
 
+# Create the asg for group VM in scale set
 resource "azurerm_application_security_group" "main" {
   name = "${local.environment}-asg"
   location = data.azurerm_resource_group.current.location
@@ -38,19 +38,6 @@ resource "azurerm_network_security_group" "my_terraform_nsg" {
   name                = "${local.environment}-nsg"
   location            = data.azurerm_resource_group.current.location
   resource_group_name = data.azurerm_resource_group.current.name
-
-  # security_rule {
-  #   name                       = "SSH"
-  #   priority                   = 1001
-  #   direction                  = "Inbound"
-  #   access                     = "Allow"
-  #   protocol                   = "Tcp"
-  #   source_port_range          = "*"
-  #   destination_port_range     = "22"
-  #   source_address_prefix      = "*"
-  #   destination_address_prefix = "*"
-  # }
-
   security_rule {
     name                       = "HTTP"
     priority                   = 1002
@@ -60,7 +47,6 @@ resource "azurerm_network_security_group" "my_terraform_nsg" {
     source_port_range          = "*"
     destination_port_range     = "80"
     source_address_prefix      = "*"
-    # destination_address_prefix = "*"
     destination_application_security_group_ids = [ azurerm_application_security_group.main.id ]
   }
 
@@ -73,34 +59,38 @@ resource "azurerm_network_security_group" "my_terraform_nsg" {
     source_port_range          = "*"
     destination_port_range     = "443"
     source_address_prefix      = "*"
-    # destination_address_prefix = "*"
     destination_application_security_group_ids = [ azurerm_application_security_group.main.id ]
   }
 
   tags = local.common_tags
 }
 
-# Create association via subnet with nsg
+# Create association via VMSS-subnet with nsg
 resource "azurerm_subnet_network_security_group_association" "main" {
   subnet_id = azurerm_subnet.my_terraform_network_subnet.id
   network_security_group_id = azurerm_network_security_group.my_terraform_nsg.id
 }
 
-# # Create NIC
-# resource "azurerm_network_interface" "my_terraform_nic" {
-#   name                = "${local.environment}-nic"
-#   location            = data.azurerm_resource_group.current.location
-#   resource_group_name = data.azurerm_resource_group.current.name
+# Create association via VM-subnet with nsg
+resource "azurerm_subnet_network_security_group_association" "vm_subnet_with_nsg" {
+  subnet_id = azurerm_subnet.subnet_VM.id
+  network_security_group_id = azurerm_network_security_group.my_terraform_nsg.id
+}
 
-#   ip_configuration {
-#     name                          = "${local.environment}-nicConfiguration"
-#     subnet_id                     = azurerm_subnet.my_terraform_network_subnet.id
-#     private_ip_address_allocation = "Dynamic"
-#     # public_ip_address_id          = azurerm_public_ip.my_terraform_public_ip.id
-#   }
+# Create NIC for Specify VM
+resource "azurerm_network_interface" "my_terraform_nic" {
+  name                = "${local.environment}-nicVM"
+  location            = data.azurerm_resource_group.current.location
+  resource_group_name = data.azurerm_resource_group.current.name
 
-#   tags = local.common_tags
-# }
+  ip_configuration {
+    name                          = "${local.environment}-nicConfiguration"
+    subnet_id                     = azurerm_subnet.subnet_VM.id
+    private_ip_address_allocation = "Dynamic"
+  }
+
+  tags = local.common_tags
+}
 
 # # Get the connect between NIC and security group
 # resource "azurerm_network_interface_security_group_association" "my_terraform_asNicSG" {
@@ -108,23 +98,11 @@ resource "azurerm_subnet_network_security_group_association" "main" {
 #   network_security_group_id = azurerm_network_security_group.my_terraform_nsg.id
 # }
 
-# Create the nat_gateway and load_blancer
-# resource "azurerm_nat_gateway" "main" {
-#   name = "${local.environment}-NATGateway"
-#   location = data.azurerm_resource_group.current.location
-#   resource_group_name = data.azurerm_resource_group.current.name
-#   sku_name = "Standard"
-# }
-
-# resource "azurerm_nat_gateway_public_ip_association" "main" {
-#   nat_gateway_id = azurerm_nat_gateway.main.id
-#   public_ip_address_id = azurerm_public_ip.my_terraform_public_ip.id
-# }
-
-# resource "azurerm_subnet_nat_gateway_association" "main" {
-#   subnet_id = azurerm_subnet.my_terraform_network_subnet.id
-#   nat_gateway_id = azurerm_nat_gateway.main.id
-# }
+# Get the connect between application security group and nic
+resource "azurerm_network_interface_application_security_group_association" "main" {
+  network_interface_id = azurerm_network_interface.my_terraform_nic.id
+  application_security_group_id = azurerm_application_security_group.main.id
+}
 
 resource "azurerm_public_ip" "publicip_LB" {
   name = "${local.environment}-lbpublicIP"
@@ -200,13 +178,13 @@ resource "azurerm_lb_outbound_rule" "name" {
   }
 }
 
-# # Assign address can connect into from subnet
-# resource "azurerm_lb_backend_address_pool_address" "name" {
-#   backend_address_pool_id = azurerm_lb_backend_address_pool.main.id
-#   name = "${local.environment}-backendlbConfigurationAddress"
-#   virtual_network_id = azurerm_virtual_network.my_terraform_network.id
-#   ip_address = azurerm_network_interface.my_terraform_nic.private_ip_address
-# }
+# Assign address can connect into from subnet
+resource "azurerm_lb_backend_address_pool_address" "name" {
+  backend_address_pool_id = azurerm_lb_backend_address_pool.main.id
+  name = "${local.environment}-backendlbConfigurationAddress"
+  virtual_network_id = azurerm_virtual_network.my_terraform_network.id
+  ip_address = azurerm_network_interface.my_terraform_nic.private_ip_address
+}
 
 # resource "azurerm_lb_nat_rule" "https_rule" {
 #   resource_group_name = data.azurerm_resource_group.current.name
