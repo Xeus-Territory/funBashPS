@@ -4,7 +4,7 @@ terraform {
       resource_group_name = "DevOpsIntern"
       storage_account_name = "orientdevopsintern"
       container_name = "tfstate"
-      key = "vm.terraform.tfstate"
+      key = "autoscaling.terraform.tfstate"
   }
 }
 
