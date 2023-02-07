@@ -31,21 +31,8 @@ resource "azurerm_linux_virtual_machine" "main" {
     type = "UserAssigned"
     identity_ids = [ data.azurerm_user_assigned_identity.main.id ]
   }
-  tags = var.tag
-}
 
-resource "azurerm_virtual_machine_extension" "start_up_script" {
-  name = "${var.environment}AgentStartUpScript"
-  virtual_machine_id = azurerm_linux_virtual_machine.main.id
-  publisher = "Microsoft.Azure.Extensions"
-  type = "CustomScript"
-  type_handler_version = "2.0"
-
-  settings = <<SETTINGS
-  {
-    "script": "${base64encode(templatefile("${abspath(path.module)}/data/userdata.sh", { url = var.url_org, auth = var.auth_type, token = var.token, pool = var.pool, agent = var.agent, workdir = var.workdir}))}"
-  }
-  SETTINGS
+  user_data = base64encode(templatefile("${abspath(path.module)}/data/userdata.sh", { user = var.admin_username, url = var.url_org, auth = var.auth_type, token = var.token, pool = var.pool, agent = var.agent, workdir = var.workdir}))
 
   tags = var.tag
 }
