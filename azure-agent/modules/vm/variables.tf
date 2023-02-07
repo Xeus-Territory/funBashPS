@@ -3,14 +3,21 @@ variable "resource_group_name" {
     description = "Resource group name of module"
 }
 
-variable "environment" {
+variable "os" {
     type = string
-    description = "Environment of module"
+    description = "os of module"
 }
 
-variable "nicAgent" {
+variable "public_key" {
     type = string
-    description = "Name of network interface for module"
+    description = "public key of module"
+    sensitive = true
+}
+
+variable "location" {
+    type = string
+    description = "location of resource group"
+    default = "southeastasia"
 }
 
 variable "vmname" {
@@ -43,7 +50,7 @@ variable "storage_account_type" {
     default = "StandardSSD_LRS"
 }
 
-variable "admin_ssh_key" {
+variable "admin_name_for_ssh" {
     type = string
     description = "admin name for ssh key login for module"
     default = "intern"
@@ -64,16 +71,6 @@ variable "configuration_vm" {
       sku = "18.04-LTS"
       version = "latest"
     }
-}
-
-variable "user_identity" {
-    type = string
-    description = "user identity for the identity"
-}
-
-variable "public_key" {
-    type = string
-    description = "public key for the identity"
 }
 
 variable "tag" {

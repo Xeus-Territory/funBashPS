@@ -3,9 +3,15 @@ variable "resource_group_name" {
     description = "Resource group name of module"
 }
 
-variable "environment" {
+variable "os" {
     type = string
-    description = "Environment of module"
+    description = "os of module"
+}
+
+variable "location" {
+    type = string
+    description = "location of resource group"
+    default = "southeastasia"
 }
 
 variable "tag" {

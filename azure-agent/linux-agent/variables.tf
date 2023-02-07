@@ -9,14 +9,10 @@ variable "location" {
     default = "southeastasia"
 }
 
-variable "environment" {
+variable "os" {
     type = string
-    description = "Environment of module"
-}
-
-variable "public_key" {
-    type = string
-    description = "public key for the identity"
+    description = "os of module"
+    default = "linux"
 }
 
 variable "tag" {

@@ -1,21 +1,21 @@
 # Create the virtual machine
 resource "azurerm_linux_virtual_machine" "main" {
-  name                  = "${var.environment}-AgentVM"
+  name                  = "${var.os}-AgentVM"
   computer_name         = var.vmname
-  resource_group_name   = data.azurerm_resource_group.main.name
-  location              = data.azurerm_resource_group.main.location
+  resource_group_name   = var.resource_group_name
+  location              = var.location
   size                  = var.sizedisk
   admin_username        = var.admin_username
   network_interface_ids = [var.nic_id]
   os_disk {
-    name                 = "${var.environment}-diskAgentVM"
+    name                 = "${var.os}-diskAgentVM"
     caching              = var.caching
     storage_account_type = var.storage_account_type
   }
 
   admin_ssh_key {
-    username   = var.admin_ssh_key
-    public_key = data.azurerm_ssh_public_key.main.public_key
+    username   = var.admin_name_for_ssh
+    public_key = var.public_key
   }
 
   source_image_reference {
