@@ -32,17 +32,20 @@ resource "azurerm_linux_virtual_machine" "main" {
     identity_ids = [data.azurerm_user_assigned_identity.main.id]
   }
 
-  user_data = base64encode(templatefile("${abspath(path.module)}/data/userdata.sh",
-    {
-      user    = var.admin_username,
-      url     = var.url_org,
-      auth    = var.auth_type,
-      token   = var.token,
-      pool    = var.pool,
-      agent   = var.agent,
-      workdir = var.workdir
-    }
-  ))
+  user_data = base64encode(
+    templatefile(
+      "${abspath(path.module)}/data/userdata.sh",
+      {
+        user    = var.admin_username,
+        url     = var.url_org,
+        auth    = var.auth_type,
+        token   = var.token,
+        pool    = var.pool,
+        agent   = var.agent,
+        workdir = var.workdir
+      }
+    )
+  )
 
   tags = var.tag
 }
