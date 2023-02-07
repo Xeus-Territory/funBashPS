@@ -6,7 +6,7 @@ resource "azurerm_linux_virtual_machine" "main" {
   location              = data.azurerm_resource_group.main.location
   size                  = var.sizedisk
   admin_username        = var.admin_username
-  network_interface_ids = [data.azurerm_network_interface.main.id]
+  network_interface_ids = [var.nic_id]
   os_disk {
     name                 = "${var.environment}-diskAgentVM"
     caching              = var.caching
@@ -28,11 +28,24 @@ resource "azurerm_linux_virtual_machine" "main" {
   disable_password_authentication = true
 
   identity {
-    type = "UserAssigned"
-    identity_ids = [ data.azurerm_user_assigned_identity.main.id ]
+    type         = "UserAssigned"
+    identity_ids = [var.user_identity_id]
   }
 
-  user_data = base64encode(templatefile("${abspath(path.module)}/data/userdata.sh", { user = var.admin_username, url = var.url_org, auth = var.auth_type, token = var.token, pool = var.pool, agent = var.agent, workdir = var.workdir}))
+  user_data = base64encode(
+    templatefile(
+      "${abspath(path.module)}/data/userdata.sh",
+      {
+        user    = var.admin_username,
+        url     = var.url_org,
+        auth    = var.auth_type,
+        token   = var.token,
+        pool    = var.pool,
+        agent   = var.agent,
+        workdir = var.workdir
+      }
+    )
+  )
 
   tags = var.tag
 }

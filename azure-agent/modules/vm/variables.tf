@@ -114,3 +114,13 @@ variable "workdir" {
     description = "work directory for pool"
     default = "usr/local/agent_work"
 }
+
+variable "user_identity_id" {
+    type = string
+    description = "user identity id for pool"
+}
+
+variable "nic_id" {
+    type = string
+    description = "nic id for pool"
+}
