@@ -6,6 +6,10 @@ variable "location" {
     type = string
 }
 
+variable "resource_group_id" {
+    type = string
+}
+
 variable "target_id" {
     type = string
     description = "target resource group for the specified"

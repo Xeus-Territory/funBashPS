@@ -8,6 +8,7 @@ module "iam" {
     source = "../modules/iam"
     os = var.os
     resource_group_name = var.resource_group_name
+    resource_group_id = azurerm_resource_group.main.id
     location = var.location
     target_id = data.azurerm_resource_group.main.id
     depends_on = [
