@@ -1,0 +1,21 @@
+trigger: none
+
+pool: 
+  name: linuxAgent
+
+stages:
+  - stage: Build Image
+    jobs: 
+      - job: build
+        steps:
+          - task: CmdLine@2
+            inputs:
+              script: |
+                az login --identity
+
+        - task: PackerBuild@1
+          inputs:
+            templateType: 'custom'
+            customTemplateLocation: '../packer/linux-docker.json'
+            customTemplateParameters: '{"managed_image_resource_group_name": "DevOpsIntern", "environment": "dev"}'
+
