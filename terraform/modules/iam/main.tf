@@ -64,24 +64,9 @@ resource "azurerm_role_assignment" "container" {
   principal_id         = azurerm_user_assigned_identity.main.principal_id
 }
 
-# # Create Role for 'Resource Group' READ 'Storage Container ' 
-# resource "azurerm_role_definition" "storage" {
-#   name        = "Read Storage Container"
-#   scope       = data.azurerm_resource_group.main.id
-#   description = "This is a custom role created via Terraform"
-
-#   permissions {
-#     actions     = ["Microsoft.Storage/storageAccounts/blobServices/containers/read",
-#                     "Microsoft.Storage/storageAccounts/blobServices/generateUserDelegationKey/action"]
-#     not_actions = []
-#     data_actions = ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"]
-#     not_data_actions = []
-#   }                
-# }
 
 resource "azurerm_role_assignment" "storage" {
   scope                = data.azurerm_resource_group.main.id
   role_definition_name = "Storage Blob Data Reader"
-  # role_definition_id   = azurerm_role_definition.storage.role_definition_resource_id
   principal_id         = azurerm_user_assigned_identity.main.principal_id
 }

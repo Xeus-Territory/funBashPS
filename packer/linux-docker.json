@@ -1,0 +1,47 @@
+{
+    "variables": {
+      "name": "linux-docker",
+      "managed_image_resource_group_name": "",
+      "managed_image_name": "linux-docker",
+
+      "os_type": "Linux",
+      "image_publisher": "Canonical",
+      "image_offer": "UbuntuServer",
+      "image_sku": "18.04-LTS",
+      "communicator": "ssh",
+
+      "managed_by": "packer",
+      "environment": "",
+      "location": "southeastasia",
+      "vm_size": "Standard_B1s"     
+    },
+    "builders": [{
+        "name": "{{user `name`}}",
+        "type": "azure-arm",
+        "use_azure_cli_auth": "true",
+        "managed_image_resource_group_name": "{{user `managed_image_resource_group_name`}}",
+        "managed_image_name": "{{user `managed_image_name`}}",
+  
+        "os_type": "{{user `os_type`}}",
+        "image_publisher": "{{user `image_publisher`}}",
+        "image_offer": "{{user `image_offer`}}",
+        "image_sku": "{{user `image_sku`}}",
+        "communicator": "{{user `communicator`}}",
+
+        "azure_tags": {
+          "managed_by": "{{user `managed_by`}}",
+          "environment": "{{user `environment`}}"
+        },
+  
+        "location": "{{user `location`}}",
+        "vm_size": "{{user `vm_size`}}"
+    }
+    ],
+    "provisioners": [{   
+        "type": "shell",
+        "scripts": [
+          "{{template_dir}}/script/setup-az.sh",
+          "{{template_dir}}/script/setup-docker.sh"
+      ]
+    }]
+  }

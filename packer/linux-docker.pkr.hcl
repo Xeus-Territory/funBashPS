@@ -75,6 +75,6 @@ build {
     sources = ["source.azure-arm.linux-docker"]
     
     provisioner "shell" {
-        scripts = ["${dirname(abspath(path.root))}/script/setup-az.sh", "${dirname(abspath(path.root))}/script/setup-docker.sh"]
+        scripts = ["${abspath(path.root)}/script/setup-az.sh", "${abspath(path.root)}/script/setup-docker.sh"]
     }
 }

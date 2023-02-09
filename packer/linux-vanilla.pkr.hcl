@@ -75,6 +75,6 @@ build {
     sources = ["source.azure-arm.linux-vanilla"]
 
     provisioner "shell" {
-        script = "${dirname(abspath(path.root))}/script/setup-az.sh" 
+        script = "${abspath(path.root)}/script/setup-az.sh" 
     }
 }

@@ -5,7 +5,7 @@ module "iam" {
 }
 
 module "network" {
-    source = "../modules/virtualNetwork"
+    source = "../modules/networking"
     environment = var.environment
     tags = var.tags
     depends_on = [
@@ -32,7 +32,6 @@ module "storage" {
       module.balancer
     ]
 }
-
 
 module "vmss" {
     source = "../modules/vmss"
