@@ -4,7 +4,7 @@ pool:
   name: linuxAgent
 
 stages:
-  - stage: Build Image
+  - stage: Build_Image
     jobs: 
       - job: build
         steps:
@@ -13,9 +13,9 @@ stages:
               script: |
                 az login --identity
 
-        - task: PackerBuild@1
-          inputs:
-            templateType: 'custom'
-            customTemplateLocation: '../packer/linux-docker.json'
-            customTemplateParameters: '{"managed_image_resource_group_name": "DevOpsIntern", "environment": "dev"}'
+          - task: PackerBuild@1
+            inputs:
+              templateType: 'custom'
+              customTemplateLocation: '../packer/linux-docker.json'
+              customTemplateParameters: '{"managed_image_resource_group_name": "DevOpsIntern"}'
 
