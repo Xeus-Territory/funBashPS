@@ -20,7 +20,6 @@
         "name": "{{user `name`}}",
         "type": "azure-arm",
         "client_id": "{{user `client_id`}}",
-        "use_azure_cli_auth": "true",
         "managed_image_resource_group_name": "{{user `managed_image_resource_group_name`}}",
         "managed_image_name": "{{user `managed_image_name`}}",
   
