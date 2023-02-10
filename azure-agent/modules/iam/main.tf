@@ -7,11 +7,10 @@ resource "azurerm_user_assigned_identity" "main" {
 # Defination custom role for resource group
 resource "azurerm_role_definition" "main" {
     name = "${var.os}-roleAgent"
-    scope = var.target_id
+    scope = var.subscription_target
     permissions {
       actions = ["*"]
-      not_actions = [ "Microsoft.Authorization/*/Delete",
-                      "Microsoft.Authorization/elevateAccess/Action",
+      not_actions = [ "Microsoft.Authorization/elevateAccess/Action",
                       "Microsoft.Blueprint/blueprintAssignments/write",
                       "Microsoft.Blueprint/blueprintAssignments/delete",
                       "Microsoft.Compute/galleries/share/action"
@@ -22,7 +21,7 @@ resource "azurerm_role_definition" "main" {
 }
 
 resource "azurerm_role_assignment" "main" {
-    scope = var.target_id
+    scope = var.subscription_target
     principal_id = azurerm_user_assigned_identity.main.principal_id
     role_definition_id = azurerm_role_definition.main.role_definition_resource_id
 }

@@ -10,12 +10,13 @@ variable "resource_group_id" {
     type = string
 }
 
-variable "target_id" {
-    type = string
-    description = "target resource group for the specified"
-}
-
 variable "os" {
     type = string
     description = "os for module"
+}
+
+variable "subscription_target" {
+    type = string
+    description = "subscription target for the specified"
+    sensitive = true
 }
