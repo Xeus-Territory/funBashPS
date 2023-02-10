@@ -4,9 +4,19 @@ pool:
   name: linuxAgent
 
 stages:
-  - stage: Build_Image
+  - stage: Packer Validate
     jobs: 
-      - job: build
+      - job: Authentication
+        steps:
+          - task: CmdLine@2
+            displayName: Authentication
+            inputs:
+              workingDirectory: 'packer/'
+              script: |
+                az login --identity
+
+      - job: Validate
+        condition: succeeded('Authentication')
         steps:
           - task: CmdLine@2
             displayName: Packer Install
@@ -16,12 +26,6 @@ stages:
                 curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
                 sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
                 sudo apt-get update && sudo apt-get install packer
-          - task: CmdLine@2
-            displayName: Authentication
-            inputs:
-              workingDirectory: 'packer/'
-              script: |
-                az login --identity
 
           - task: CmdLine@2
             condition: succeeded('Authentication')
