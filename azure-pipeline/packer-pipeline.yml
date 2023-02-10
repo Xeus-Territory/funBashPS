@@ -10,13 +10,19 @@ stages:
         steps:
           - task: CmdLine@2
             inputs:
+              workingDirectory: 'packer/'
               script: |
-                az login -u $username -p $password
+                curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+                sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+                sudo apt-get update && sudo apt-get install packer
+                az login --identity
+                packer init linux-docker.pkr.hcl
+              
 
-          - task: PackerBuild@1
-            inputs:
-              templateType: 'custom'
-              customTemplateLocation: 'packer/linux-docker.json'
-              customTemplateParameters: '{ "managed_image_resource_group_name": "DevOpsIntern", "environment": "dev"
-              }'
+          # - task: PackerBuild@1
+          #   inputs:
+          #     templateType: 'custom'
+          #     customTemplateLocation: 'packer/linux-docker.json'
+          #     customTemplateParameters: '{ "managed_image_resource_group_name": "DevOpsIntern", "environment": "dev"
+          #     }'
 
