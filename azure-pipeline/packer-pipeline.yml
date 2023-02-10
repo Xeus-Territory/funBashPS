@@ -9,23 +9,35 @@ stages:
       - job: build
         steps:
           - task: CmdLine@2
+            displayName: Packer Install
             inputs:
               workingDirectory: 'packer/'
               script: |
                 curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
                 sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
                 sudo apt-get update && sudo apt-get install packer
+          - task: CmdLine@2
+            displayName: Authentication
+            inputs:
+              workingDirectory: 'packer/'
+              script: |
                 az login --identity
+
+          - task: CmdLine@2
+            condition: succeeded('Authentication')
+            displayName: Packer Validate
+            inputs:
+              workingDirectory: 'packer/'
+              script: |
                 export render_image_name= $render_image_name
                 packer init linux-docker.pkr.hcl
                 packer validate linux-docker.pkr.hcl
                 
-              
-
-          # - task: PackerBuild@1
-          #   inputs:
-          #     templateType: 'custom'
-          #     customTemplateLocation: 'packer/linux-docker.json'
-          #     customTemplateParameters: '{ "managed_image_resource_group_name": "DevOpsIntern", "environment": "dev"
-          #     }'
-
+          - task: CmdLine@2
+            condition: succeeded('Packer Validate')
+            displayName: Packer Build
+            inputs:
+              workingDirectory: 'packer/'
+              script: |
+                export render_image_name= $render_image_name
+                packer build linux-docker.pkr.hcl
