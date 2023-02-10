@@ -2,8 +2,8 @@
 # Create a Linux Virtual Machine Scale sets
 resource "azurerm_linux_virtual_machine_scale_set" "main" {
   name                  = "${var.environment}-vmss"
-  resource_group_name   = data.azurerm_resource_group.main.name
-  location              = data.azurerm_resource_group.main.location
+  resource_group_name   = var.resource_group_name
+  location              = var.resource_group_location
   sku                 = "Standard_B1s"
   instances             = 1
   admin_username        = "intern"

@@ -1,7 +1,7 @@
 resource "azurerm_storage_account" "main" {
   name                     = "${var.environment}orientdnintern"
-  resource_group_name      = data.azurerm_resource_group.main.name
-  location                 = data.azurerm_resource_group.main.location
+  resource_group_name      = var.resource_group_name
+  location                 = var.resource_group_location
   account_tier             = "Standard"
   account_replication_type = "LRS"
 

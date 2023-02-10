@@ -1,15 +1,15 @@
 # Create User Identity
 resource "azurerm_user_assigned_identity" "main" {
-  location            = data.azurerm_resource_group.main.location
+  resource_group_name = var.resource_group_name
+  location            = var.resource_group_location
   name                = "${var.environment}-identity"
-  resource_group_name = data.azurerm_resource_group.main.name
   tags = var.tags
 }
 
 # Create Role for 'Resource Group' READ 'Container Registry'
 resource "azurerm_role_definition" "container" {
   name        = "Read Container"
-  scope       = data.azurerm_resource_group.main.id
+  scope       = var.resource_group_root_id
   description = "This is a custom role created via Terraform"
 
   permissions {
@@ -59,14 +59,14 @@ resource "azurerm_role_definition" "container" {
 }
 
 resource "azurerm_role_assignment" "container" {
-  scope                = data.azurerm_resource_group.main.id
+  scope                 = var.resource_group_root_id
   role_definition_id   = azurerm_role_definition.container.role_definition_resource_id
   principal_id         = azurerm_user_assigned_identity.main.principal_id
 }
 
 
 resource "azurerm_role_assignment" "storage" {
-  scope                = data.azurerm_resource_group.main.id
+  scope                = var.resource_group_id
   role_definition_name = "Storage Blob Data Reader"
   principal_id         = azurerm_user_assigned_identity.main.principal_id
 }
