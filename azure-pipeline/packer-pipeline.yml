@@ -6,7 +6,7 @@ pool:
 stages:
   - stage: Packer
     jobs: 
-      - job: Authentication
+      - job: Validate
         steps:
           - task: CmdLine@2
             displayName: Authentication
@@ -14,9 +14,6 @@ stages:
               workingDirectory: 'packer/'
               script: |
                 az login --identity
-
-      - job: Validate
-        steps:
           - task: CmdLine@2
             displayName: Packer_Install
             inputs:
