@@ -36,7 +36,7 @@ stages:
                 packer validate linux-docker.pkr.hcl
                 
           - task: CmdLine@2
-            condition: succeeded('Packer Validate')
+            condition: succeeded('Packer_Validate')
             displayName: Packer_Build
             inputs:
               workingDirectory: 'packer/'
