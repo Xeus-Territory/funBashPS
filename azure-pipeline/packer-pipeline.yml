@@ -16,6 +16,6 @@ stages:
           - task: PackerBuild@1
             inputs:
               templateType: 'custom'
-              customTemplateLocation: '../packer/linux-docker.json'
+              customTemplateLocation: 'packer/linux-docker.json'
               customTemplateParameters: '{"managed_image_resource_group_name": "DevOpsIntern"}'
 
