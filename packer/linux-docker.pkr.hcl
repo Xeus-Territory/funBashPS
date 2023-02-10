@@ -25,6 +25,7 @@ variable "version" {
 
 variable "render_image_name" {
     type = string
+    default = "linux"
 }
 
 variable "resource_managed_image_name" {

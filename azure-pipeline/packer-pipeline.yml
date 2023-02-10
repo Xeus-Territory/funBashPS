@@ -17,6 +17,7 @@ stages:
                 sudo apt-get update && sudo apt-get install packer
                 az login --identity
                 packer init linux-docker.pkr.hcl
+                packer validate linux-docker.pkr.hcl
               
 
           # - task: PackerBuild@1
