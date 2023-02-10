@@ -17,8 +17,7 @@ stages:
             inputs:
               templateType: 'custom'
               customTemplateLocation: 'packer/linux-docker.json'
-              customTemplateParameters: '{
-                "managed_image_resource_group_name": "DevOpsIntern",
+              customTemplateParameters: '{ "managed_image_resource_group_name": "DevOpsIntern",
                 "client_id: "ecadcb47-d059-40e1-92bb-71411ae3efca"
               }'
 
