@@ -4,7 +4,7 @@ pool:
   name: linuxAgent
 
 stages:
-  - stage: Packer_Validate
+  - stage: Packer
     jobs: 
       - job: Authentication
         steps:
@@ -16,7 +16,6 @@ stages:
                 az login --identity
 
       - job: Validate
-        condition: succeeded('Authentication')
         steps:
           - task: CmdLine@2
             displayName: Packer_Install
