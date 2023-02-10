@@ -23,7 +23,8 @@
         "subscription_id": "{{user `subscription_id`}}",
         "storage_account": "orientdevopsintern",
         "resource_group_name": "{{user `managed_image_resource_group_name`}}",
-  
+        "capture_container_name": "images",
+        "capture_name_prefix": "packer",
         "os_type": "{{user `os_type`}}",
         "image_publisher": "{{user `image_publisher`}}",
         "image_offer": "{{user `image_offer`}}",
