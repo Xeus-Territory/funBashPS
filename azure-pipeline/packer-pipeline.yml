@@ -11,12 +11,12 @@ stages:
           - task: CmdLine@2
             inputs:
               script: |
-                az login --identity
+                az login -u $username -p $password
 
           - task: PackerBuild@1
             inputs:
               templateType: 'custom'
               customTemplateLocation: 'packer/linux-docker.json'
-              customTemplateParameters: '{ "managed_image_resource_group_name": "DevOpsIntern" , "client_id": "29eeebee-0152-449c-b9de-fdacfadbb09e", "subscription_id": "feca0420-9d9a-4005-9355-2cb0ec6bc666"
+              customTemplateParameters: '{ "managed_image_resource_group_name": "DevOpsIntern", "environment": "dev"
               }'
 
