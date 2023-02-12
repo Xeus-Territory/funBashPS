@@ -18,7 +18,7 @@ stages:
               terraformVersion: 'latest'
 
           - task: TerraformTaskV3@3
-            displayName: Terraform Apply
+            displayName: Terraform Destroy
             inputs:
               provider: 'azurerm'
               command: 'destroy'
