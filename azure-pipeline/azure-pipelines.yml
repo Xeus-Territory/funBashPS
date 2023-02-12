@@ -46,7 +46,11 @@ stages:
               workingDirectory: $(workingDirectory)
               environmentServiceNameAzureRM: $(serviceConnection)
             env:
-              TF_VAR_environment: $(environment)
+              TF_VAR_resource_group_root_name: $(resource_group_root_name)
+              TF_VAR_resource_group_name: $(resource_group_name)   
+              TF_VAR_container_registry_name: $(container_registry_name)
+              TF_VAR_source_image_name: $(source_image_name)   
+              TF_VAR_ssh_public_key_name: $(ssh_public_key_name)    
               TF_VAR_allowed_ips: $(allowed_ips)
 
   - stage: terraform_apply
@@ -80,6 +84,10 @@ stages:
               workingDirectory: $(workingDirectory)
               environmentServiceNameAzureRM: $(serviceConnection)
             env:
-              TF_VAR_environment: $(environment)
-              TF_VAR_allowed_ips: $(allowed_ips)                   
+              TF_VAR_resource_group_root_name: $(resource_group_root_name)
+              TF_VAR_resource_group_name: $(resource_group_name)   
+              TF_VAR_container_registry_name: $(container_registry_name)
+              TF_VAR_source_image_name: $(source_image_name)   
+              TF_VAR_ssh_public_key_name: $(ssh_public_key_name)    
+              TF_VAR_allowed_ips: $(allowed_ips)
 

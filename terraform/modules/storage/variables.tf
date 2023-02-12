@@ -1,33 +1,36 @@
 variable "resource_group_name" {
-  type = string
+  type        = string
   description = "Resource group name of Dev Environment"
-  default = "dev"
 }
 
 variable "resource_group_location" {
-  type = string
+  type        = string
   description = "Resource group location of Dev Environment"
-  default = "southeastasia"
 }
 
 variable "environment" {
-  type = string 
+  type        = string 
   description = "Enviroment name for working"
 }
 
 variable "tags" {
-    type = map
-    description = "Resource tags"
-    default = null
+  type        = map
+  description = "Resource tags"
+  default     = null
 }
 
 variable "allowed_ips" {
-    type = string
-    description = "The ip allow access storage blob"
-    sensitive = true
+  type        = string
+  description = "The ip allow access storage blob"
+  sensitive   = true
+}
+
+variable "subnet_id" {
+  type        = string
+  description = "ID of Subnet in Virtual Network"
 }
 
 variable "blob_name" {
-    type = string
-    description = "Name of Blob inside Container of Storage Account"
+  type        = string
+  description = "Name of Blob inside Container of Storage Account"
 }

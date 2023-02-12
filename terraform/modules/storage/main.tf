@@ -6,9 +6,9 @@ resource "azurerm_storage_account" "main" {
   account_replication_type = "LRS"
 
   network_rules {
-      default_action = "Allow"
-      ip_rules = [var.allowed_ips]
-      virtual_network_subnet_ids = [data.azurerm_subnet.main.id]
+      default_action              = "Allow"
+      ip_rules                    = [var.allowed_ips]
+      virtual_network_subnet_ids  = [var.subnet_id]
   }
   tags = var.tags
 }

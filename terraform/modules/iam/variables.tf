@@ -3,22 +3,19 @@ variable "resource_group_root_id" {
   description = "Resource group Root ID"
 }
 
+variable "resource_group_id" {
+  type = string
+  description = "Resource group ID of Dev Environment"
+}
 
 variable "resource_group_name" {
   type = string
   description = "Resource group name of Dev Environment"
-  default = "dev"
 }
 
 variable "resource_group_location" {
   type = string
   description = "Resource group location of Dev Environment"
-  default = "southeastasia"
-}
-
-variable "resource_group_id" {
-  type = string
-  description = "Resource group ID of Dev Environment"
 }
 
 variable "environment" {
