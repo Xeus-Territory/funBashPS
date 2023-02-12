@@ -39,5 +39,6 @@ stages:
               command: 'destroy'
               commandOptions: '-auto-approve'
               workingDirectory: $(workingDirectory)
+              environmentServiceNameAzureRM: $(serviceConnection)
   
 
