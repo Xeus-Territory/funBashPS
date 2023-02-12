@@ -12,6 +12,7 @@ stages:
             inputs:
               script: |
                 pwd
+                cd terraform/dev/
                 ls -la
   #         - task: CmdLine@2
   #           inputs:
