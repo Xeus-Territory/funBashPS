@@ -2,15 +2,17 @@
 # Create a Linux Virtual Machine Scale sets
 resource "azurerm_linux_virtual_machine_scale_set" "main" {
   name                  = "${var.environment}-vmss"
-  resource_group_name   = data.azurerm_resource_group.main.name
-  location              = data.azurerm_resource_group.main.location
-  sku                 = "Standard_B1s"
+  resource_group_name   = var.resource_group_name
+  location              = var.resource_group_location
+  sku                   = "Standard_B1s"
   instances             = 1
   admin_username        = "intern"
 
+  source_image_id = var.source_image_id
+
   admin_ssh_key {
     username   = "intern"
-    public_key = data.azurerm_ssh_public_key.main.public_key
+    public_key = var.ssh_public_key_name
   }
   
   os_disk {
@@ -20,25 +22,18 @@ resource "azurerm_linux_virtual_machine_scale_set" "main" {
 
   identity {
     type = "UserAssigned"
-    identity_ids = [data.azurerm_user_assigned_identity.main.id]
-  }
-
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "18.04-LTS"
-    version   = "latest"
+    identity_ids = [var.user_identity_id]
   }
 
   network_interface {
-    name = "${var.environment}-vmss-network"
-    primary = true
+    name      = "${var.environment}-vmss-network"
+    primary   = true
     ip_configuration {
-      name = "internal"
-      primary = true
-      subnet_id = data.azurerm_subnet.main.id
-      load_balancer_backend_address_pool_ids =[ data.azurerm_lb_backend_address_pool.main.id ]
-      application_security_group_ids = [ data.azurerm_application_security_group.main.id ] 
+      name                                    = "internal"
+      primary                                 = true
+      subnet_id                               = var.subnet_id
+      load_balancer_backend_address_pool_ids  = [ var.load_balancer_backend_address_pool_ids ]
+      application_security_group_ids          = [ var.application_security_group_ids ] 
     }
   }
 
@@ -50,14 +45,14 @@ resource "azurerm_linux_virtual_machine_scale_set" "main" {
 
     settings = jsonencode({
       "script": "${base64encode("${templatefile("${abspath(path.module)}/data/startup.tpl",{
-    "containerRegistry_main" = data.azurerm_container_registry.main.name
-    "storageAccount_web" = data.azurerm_storage_account.main.name
-    "storageContainer_web" = data.azurerm_storage_container.main.name
-    "storageBlob_web" = data.azurerm_storage_blob.main.name
+    "containerRegistry_main"  = var.container_registry_name
+    "storageAccount_web"      = var.storage_account_name
+    "storageContainer_web"    = var.storage_container_name
+    "storageBlob_web"         = var.storage_blob_name
 })}")}"
     })
   }
 
   disable_password_authentication = true
-  tags = var.tags
+  tags                            = var.tags
 }

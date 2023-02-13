@@ -1,8 +1,8 @@
 # # Create Monitor for Scale Sets
 # resource "azurerm_monitor_autoscale_setting" "main" {
 #   name                = "${var.environment}-autoScaleSetting"
-#   resource_group_name = data.azurerm_resource_group.main.name
-#   location            = data.azurerm_resource_group.main.location
+#   resource_group_name   = var.resource_group_name
+#   location              = var.resource_group_location
 #   target_resource_id  = azurerm_linux_virtual_machine_scale_set.main.id
 #   tags = var.tags
 

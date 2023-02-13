@@ -2,8 +2,8 @@
 # Create public IP for Load Balancer
 resource "azurerm_public_ip" "main_alb" {
   name                = "${var.environment}-publicIPforBalancer"
-  location            = data.azurerm_resource_group.main.location
-  resource_group_name = data.azurerm_resource_group.main.name
+  resource_group_name = var.resource_group_name
+  location            = var.resource_group_location
   allocation_method   = "Static"
   sku = "Standard"
   tags = var.tags
@@ -12,8 +12,8 @@ resource "azurerm_public_ip" "main_alb" {
 # Create Azure Load balancer 
 resource "azurerm_lb" "main" {
   name                = "${var.environment}-loadbalancer"
-  location            = data.azurerm_resource_group.main.location
-  resource_group_name = data.azurerm_resource_group.main.name
+  location            = var.resource_group_location
+  resource_group_name = var.resource_group_name
   sku = "Standard"
   sku_tier = "Regional"
   frontend_ip_configuration {
