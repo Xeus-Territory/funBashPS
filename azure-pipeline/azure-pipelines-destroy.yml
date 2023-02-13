@@ -1,0 +1,51 @@
+trigger: none
+
+pool: 
+  name: linuxAgent
+
+stages:
+  - stage: terraform_destroy
+    jobs: 
+      - job: terraform_destroy
+        steps:
+          - task: CmdLine@2
+            inputs:
+              script: |
+                export TF_LOG=DEBUG   
+                sudo apt install unzip -y
+                az login --identity
+
+          - task: TerraformInstaller@0
+            inputs:
+              terraformVersion: 'latest'
+
+          - task: TerraformTaskV3@3
+            displayName: 'Terraform Init'
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              commandOptions: '-force-copy'
+              workingDirectory: $(workingDirectory)
+              backendServiceArm: $(serviceConnection)
+              backendAzureRmResourceGroupName: $(resourceGroup)
+              backendAzureRmStorageAccountName: $(storageAccount)
+              backendAzureRmContainerName:  $(storageContainer)
+              backendAzureRmKey: $(storageKey)
+              
+          - task: TerraformTaskV3@3
+            displayName: Terraform Destroy
+            inputs:
+              provider: 'azurerm'
+              command: 'destroy'
+              commandOptions: '-auto-approve'
+              workingDirectory: $(workingDirectory)
+              environmentServiceNameAzureRM: $(serviceConnection)
+            env:
+              TF_VAR_resource_group_root_name: $(resource_group_root_name)
+              TF_VAR_resource_group_name: $(resource_group_name)   
+              TF_VAR_container_registry_name: $(container_registry_name)
+              TF_VAR_source_image_name: $(source_image_name)   
+              TF_VAR_ssh_public_key_name: $(ssh_public_key_name)    
+              TF_VAR_allowed_ips: $(allowed_ips)
+  
+

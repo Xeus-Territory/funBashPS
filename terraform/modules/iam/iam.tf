@@ -1,16 +1,19 @@
-# Create User Identity for VM
+# Create User Identity
 resource "azurerm_user_assigned_identity" "main" {
-  location            = data.azurerm_resource_group.current.location
-  name                = "${local.environment}-identityforVM"
-  resource_group_name = data.azurerm_resource_group.current.name
+  resource_group_name = var.resource_group_name
+  location            = var.resource_group_location
+  name                = "${var.environment}-identity"
+  tags = var.tags
 }
 
-# Defination custom role for resource group
-resource "azurerm_role_definition" "read_container_registry" {
-    name = "${local.environment}-readContainerRegistry"
-    scope = data.azurerm_resource_group.current.id
-    permissions {
-      actions = [   "Microsoft.ContainerRegistry/checkNameAvailability/read",
+# Create Role for 'Resource Group' READ 'Container Registry'
+resource "azurerm_role_definition" "container" {
+  name        = "Read Container"
+  scope       = var.resource_group_root_id
+  description = "This is a custom role created via Terraform"
+
+  permissions {
+    actions     = [ "Microsoft.ContainerRegistry/checkNameAvailability/read",
                     "Microsoft.ContainerRegistry/locations/operationResults/read",
                     "Microsoft.ContainerRegistry/operations/read",
                     "Microsoft.ContainerRegistry/registries/read",
@@ -49,21 +52,21 @@ resource "azurerm_role_definition" "read_container_registry" {
                     "Microsoft.ContainerRegistry/registries/webhooks/operationStatuses/read",
                     "Microsoft.ContainerRegistry/registries/providers/Microsoft.Insights/logDefinitions/read",
                     "Microsoft.ContainerRegistry/registries/providers/Microsoft.Insights/metricDefinitions/read"]
-      not_actions = []
-      data_actions = []
-      not_data_actions = []
-    }
+    not_actions = []
+    data_actions = []
+    not_data_actions = []
+  }                
 }
 
-# Assign the role for the identity provider with custom role for resource group
-resource "azurerm_role_assignment" "assign_vm_read_container_registry" {
-    scope = data.azurerm_resource_group.current.id
-    principal_id = azurerm_user_assigned_identity.main.principal_id
-    role_definition_id = azurerm_role_definition.read_container_registry.role_definition_resource_id
+resource "azurerm_role_assignment" "container" {
+  scope                 = var.resource_group_root_id
+  role_definition_id   = azurerm_role_definition.container.role_definition_resource_id
+  principal_id         = azurerm_user_assigned_identity.main.principal_id
 }
 
-resource "azurerm_role_assignment" "assign_vm_read_container_storage" {
-    scope = data.azurerm_resource_group.current.id
-    principal_id = azurerm_user_assigned_identity.main.principal_id
-    role_definition_name = "Storage Blob Data Reader"
+
+resource "azurerm_role_assignment" "storage" {
+  scope                = var.resource_group_id
+  role_definition_name = "Storage Blob Data Reader"
+  principal_id         = azurerm_user_assigned_identity.main.principal_id
 }
