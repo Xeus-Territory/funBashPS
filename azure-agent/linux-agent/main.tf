@@ -10,7 +10,7 @@ module "iam" {
     resource_group_name = var.resource_group_name
     resource_group_id = azurerm_resource_group.main.id
     location = var.location
-    target_id = data.azurerm_resource_group.main.id
+    subscription_target = data.azurerm_subscription.main.id
     depends_on = [
       azurerm_resource_group.main
     ]

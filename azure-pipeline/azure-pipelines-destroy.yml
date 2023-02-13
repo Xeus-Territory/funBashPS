@@ -24,6 +24,7 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'init'
+              commandOptions: '-force-copy'
               workingDirectory: $(workingDirectory)
               backendServiceArm: $(serviceConnection)
               backendAzureRmResourceGroupName: $(resourceGroup)
@@ -43,6 +44,7 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'plan'
+              commandOptions: '-destroy'
               workingDirectory: $(workingDirectory)
               environmentServiceNameAzureRM: $(serviceConnection)
             env:
@@ -53,37 +55,45 @@ stages:
               TF_VAR_ssh_public_key_name: $(sshPublicKey)    
               TF_VAR_allowed_ips: $(allowedIPs)
 
-  - stage: terraform_apply
+  - stage: terraform_destroy
     dependsOn: [terraform_plan]
     condition: succeeded('terraform_plan')
     jobs: 
-      - deployment: terraform_apply
+      - deployment: terraform_destroy
         environment: $(environmentName)
         strategy:
           runOnce:
             deploy:
               steps:
+                  - task: CmdLine@2
+                    inputs:
+                      script: |
+                        export TF_LOG=DEBUG   
+                        sudo apt install unzip -y
+                        az login --identity
+
                   - task: TerraformInstaller@0
                     inputs:
                       terraformVersion: 'latest'
-        
+
                   - task: TerraformTaskV3@3
                     displayName: 'Terraform Init'
                     inputs:
                       provider: 'azurerm'
                       command: 'init'
+                      commandOptions: '-force-copy'
                       workingDirectory: $(workingDirectory)
                       backendServiceArm: $(serviceConnection)
                       backendAzureRmResourceGroupName: $(resourceGroup)
                       backendAzureRmStorageAccountName: $(storageAccount)
                       backendAzureRmContainerName:  $(storageContainer)
                       backendAzureRmKey: $(storageKey)
-        
+
                   - task: TerraformTaskV3@3
-                    displayName: Terraform Apply
+                    displayName: Terraform Destroy
                     inputs:
                       provider: 'azurerm'
-                      command: 'apply'
+                      command: 'destroy'
                       commandOptions: '-auto-approve'
                       workingDirectory: $(workingDirectory)
                       environmentServiceNameAzureRM: $(serviceConnection)
@@ -94,5 +104,5 @@ stages:
                       TF_VAR_source_image_name: $(sourceImage)   
                       TF_VAR_ssh_public_key_name: $(sshPublicKey)    
                       TF_VAR_allowed_ips: $(allowedIPs)
-        
-        
+
+

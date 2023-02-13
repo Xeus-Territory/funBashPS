@@ -27,9 +27,12 @@ variable "render_image_name" {
     type = string
 }
 
-variable "resource_managed_image_name" {
+variable "resource_group_name" {
     type = string
-    default = "DevOpsIntern"
+}
+
+variable "build_resource_group_name" {
+    type = string
 }
 
 variable "location" {
@@ -63,9 +66,8 @@ source "azure-arm" "linux-docker" {
     image_sku = var.sku
     image_version = var.version
     managed_image_name = var.render_image_name
-    managed_image_resource_group_name = var.resource_managed_image_name
-
-    location = var.location
+    managed_image_resource_group_name = var.resource_group_name
+    build_resource_group_name = var.build_resource_group_name
     vm_size = var.vm_size
     azure_tags = var.tags
     communicator = var.communicator

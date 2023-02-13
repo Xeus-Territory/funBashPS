@@ -3,7 +3,8 @@
       "name": "linux-docker",
       "managed_image_resource_group_name": "",
       "managed_image_name": "linux-docker",
-
+      "client_id":"",
+      "subscription_id":"",
       "os_type": "Linux",
       "image_publisher": "Canonical",
       "image_offer": "UbuntuServer",
@@ -18,10 +19,9 @@
     "builders": [{
         "name": "{{user `name`}}",
         "type": "azure-arm",
-        "use_azure_cli_auth": "true",
+        "use_azure_cli_auth": true,
         "managed_image_resource_group_name": "{{user `managed_image_resource_group_name`}}",
         "managed_image_name": "{{user `managed_image_name`}}",
-  
         "os_type": "{{user `os_type`}}",
         "image_publisher": "{{user `image_publisher`}}",
         "image_offer": "{{user `image_offer`}}",
