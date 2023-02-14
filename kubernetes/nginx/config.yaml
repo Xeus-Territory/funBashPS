@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+data:
+  nginx.conf: |
+    upstream alb
+    {
+            server app1:8001;
+            server app2:8002;
+    }
+    server {
+        listen 80 default_server;
+        server_name _;
+
+        location / {
+            return 404;
+        }
+
+        location /original {
+            proxy_pass http://alb;
+        }
+
+        location /v1 {
+    		return 307 /original;
+    	}
+
+    	location /v2 {
+    		return 307 /original;
+    	}
+
+        location /v3 {
+            proxy_pass http://app3:8003;
+        }
+
+        location /v4 {
+            proxy_pass http://app4:8004;
+        }
+    }
+

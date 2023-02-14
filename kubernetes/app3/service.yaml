@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app3-service
+spec:
+  selector:
+    app: App3
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8003

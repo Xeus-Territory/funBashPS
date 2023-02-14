@@ -1,33 +1,35 @@
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 
 metadata:
   name: website-2
   namespace: devops
   labels:
-    app: web-2
+    name: web-2
 
 spec:
+  replicas: 2
   selector:
     matchLabels:
-      app: web-2
+      app: App2
   template:
     metadata:
       labels:
-        app: web-2
-
+        app: App2
     spec:
       containers:
-      - name: website-2
-        image: devopsorient.azurecr.io/webpage8002
-        ports:
+        - name: website-2
+          image: devopsorient.azurecr.io/webpage8002
+          ports:
           - containerPort: 8002
-        resources:
+
+          resources:
             limits:
               memory: "256Mi"
               cpu: "0.1"
-        env:
+          env:
           - name: MESSAGE
             value: 'App 2!'
           - name: PORT
             value: '8002'
+
