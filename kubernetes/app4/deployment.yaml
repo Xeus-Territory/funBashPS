@@ -1,31 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web-app1
+  name: web-app4
   labels:
-    app: web-app1
+    app: web-app4
   namespace: devops
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: web-app1
+      app: web-app4
   template:
     metadata:
       labels:
-        app: web-app1
+        app: web-app4
     spec:
       containers:
-      - name: app1
-        image: devopsorient.azurecr.io/webpage8001:latest
+      - name: app4
+        image: devopsorient.azurecr.io/webpage8004:latest
         ports:
-        - containerPort: 8001
+        - containerPort: 80
         resources:
           limits:
             memory: "256Mi"
             cpu: "0.1"
         env:
           - name: MESSAGE
-            value: 'App 1 !'
+            value: 'App 4 !'
           - name: PORT
-            value: '8001'
+            value: '80'
