@@ -1,0 +1,98 @@
+trigger: none
+
+pool: 
+  name: linuxAgent
+
+stages:
+  - stage: terraform_plan
+    jobs: 
+      - job: terraform_plan
+        steps:
+          - task: CmdLine@2
+            inputs:
+              script: |
+                export TF_LOG=DEBUG   
+                sudo apt install unzip -y
+                az login --identity
+
+          - task: TerraformInstaller@0
+            inputs:
+              terraformVersion: 'latest'
+
+          - task: TerraformTaskV3@3
+            displayName: 'Terraform init'
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: $(workingDirectory)
+              backendServiceArm: $(serviceConnection)
+              backendAzureRmResourceGroupName: $(resourceGroup)
+              backendAzureRmStorageAccountName: $(storageAccount)
+              backendAzureRmContainerName:  $(storageContainer)
+              backendAzureRmKey: $(storageKey)
+              
+          - task: TerraformTaskV3@3
+            displayName: Terraform Validate
+            inputs:
+              provider: 'azurerm'
+              command: 'validate'
+              workingDirectory: $(workingDirectory)
+
+          - task: TerraformTaskV3@3
+            displayName: Terraform Plan
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              workingDirectory: $(workingDirectory)
+              environmentServiceNameAzureRM: $(serviceConnection)
+            env:
+              TF_VAR_resource_group_root_name: $(resourceGroupRoot)
+              TF_VAR_resource_group_name: $(resourceGroupDev)  
+              TF_VAR_container_registry_name: $(containerRegistry)
+              TF_VAR_source_image_name: $(sourceImage)   
+              TF_VAR_ssh_public_key_name: $(sshPublicKey)    
+              TF_VAR_allowed_ips: $(allowedIPs)
+
+  - stage: terraform_apply
+    dependsOn: [terraform_plan]
+    condition: succeeded('terraform_plan')
+    jobs: 
+      - deployment: terraform_apply
+        environment: $(environmentName)
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                  - task: TerraformInstaller@0
+                    inputs:
+                      terraformVersion: 'latest'
+        
+                  - task: TerraformTaskV3@3
+                    displayName: 'Terraform Init'
+                    inputs:
+                      provider: 'azurerm'
+                      command: 'init'
+                      workingDirectory: $(workingDirectory)
+                      backendServiceArm: $(serviceConnection)
+                      backendAzureRmResourceGroupName: $(resourceGroup)
+                      backendAzureRmStorageAccountName: $(storageAccount)
+                      backendAzureRmContainerName:  $(storageContainer)
+                      backendAzureRmKey: $(storageKey)
+        
+                  - task: TerraformTaskV3@3
+                    displayName: Terraform Apply
+                    inputs:
+                      provider: 'azurerm'
+                      command: 'apply'
+                      commandOptions: '-auto-approve'
+                      workingDirectory: $(workingDirectory)
+                      environmentServiceNameAzureRM: $(serviceConnection)
+                    env:
+                      TF_VAR_resource_group_root_name: $(resourceGroupRoot)
+                      TF_VAR_resource_group_name: $(resourceGroupDev)  
+                      TF_VAR_container_registry_name: $(containerRegistry)
+                      TF_VAR_source_image_name: $(sourceImage)   
+                      TF_VAR_ssh_public_key_name: $(sshPublicKey)    
+                      TF_VAR_allowed_ips: $(allowedIPs)
+        
+        
