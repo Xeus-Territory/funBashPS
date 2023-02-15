@@ -2,20 +2,20 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: website-2
+  name: app-2-deployment
   namespace: devops
   labels:
-    name: web-2
+    app.kubernetes.io/name: app-2
 
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: App2
+      app.kubernetes.io/name: app-2
   template:
     metadata:
       labels:
-        app: App2
+        app.kubernetes.io/name: app-2
     spec:
       containers:
         - name: website-2

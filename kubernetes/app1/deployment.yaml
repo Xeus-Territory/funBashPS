@@ -2,20 +2,20 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: website-1
+  name: app-1-deployment
   namespace: devops
   labels:
-    name: web-1
+    app.kubernetes.io/name: app-1
 
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: App1
+      app.kubernetes.io/name: app-1
   template:
     metadata:
       labels:
-        app: App1
+        app.kubernetes.io/name: app-1
     spec:
       containers:
         - name: website-1
@@ -23,7 +23,6 @@ spec:
           ports:
           - containerPort: 8001
           
-
           resources:
             limits:
               memory: "256Mi"

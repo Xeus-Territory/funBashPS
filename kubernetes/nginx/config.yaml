@@ -2,12 +2,13 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nginx-conf
+  namespace: devops
 data:
   nginx.conf: |
     upstream alb
     {
-            server app1:8001;
-            server app2:8002;
+            server app-1-service:80;
+            server app-2-service:80;
     }
     server {
         listen 80 default_server;
@@ -30,11 +31,11 @@ data:
     	}
 
         location /v3 {
-            proxy_pass http://app3:8003;
+            proxy_pass http://app-3-service:80;
         }
 
         location /v4 {
-            proxy_pass http://app4:8004;
+            proxy_pass http://app-4-service:80;
         }
     }
 

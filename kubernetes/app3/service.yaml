@@ -1,10 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: app3-service
+  name: app-3-service
+  namespace: devops
 spec:
   selector:
-    app: App3
+    app.kubernetes.io/name: app-3
   ports:
     - protocol: TCP
       port: 80
