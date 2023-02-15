@@ -8,7 +8,7 @@ resource "azurerm_user_assigned_identity" "main" {
 
 # Create Role for 'Resource Group' READ 'Container Registry'
 resource "azurerm_role_definition" "container" {
-  name        = "Read Container"
+  name        = "Read Container Registry"
   scope       = var.resource_group_root_id
   description = "This is a custom role created via Terraform"
 
@@ -64,6 +64,12 @@ resource "azurerm_role_assignment" "container" {
   principal_id         = azurerm_user_assigned_identity.main.principal_id
 }
 
+
+# resource "azurerm_role_assignment" "k8s" {
+#   scope                 = var.resource_group_root_id
+#   role_definition_id   = azurerm_role_definition.container.role_definition_resource_id
+#   delegated_managed_identity_resource_id         = var.cluster_pricipal_id
+# }
 
 resource "azurerm_role_assignment" "storage" {
   scope                = var.resource_group_id

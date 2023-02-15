@@ -28,3 +28,8 @@ variable "tags" {
     description = "Resource tags"
     default = null
 }
+
+# variable "cluster_pricipal_id" {
+#   type = string 
+#   description = "Enviroment name for working"
+# }
