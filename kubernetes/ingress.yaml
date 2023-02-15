@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-wildcard-host
+  name: nginx-host
   namespace: devops
 spec:
   ingressClassName: nginx
@@ -12,6 +12,6 @@ spec:
           path: "/"
           backend:
             service:
-              name: web-server-nginx
+              name: web-server
               port:
                 number: 80
