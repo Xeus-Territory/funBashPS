@@ -4,7 +4,7 @@ metadata:
   name: ingress-wildcard-host
   namespace: devops
 spec:
-  ingressClassName: nginx
+  ingressClassName: ingress-appgw
   rules:
     - http:
         paths:

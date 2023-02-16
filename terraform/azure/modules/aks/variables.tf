@@ -6,7 +6,7 @@ variable "resource_group_name" {
 variable "resource_group_location" {
   type = string
   description = "Resource group location of Dev Environment"
-    default = "southeastasia"
+  default = "southeastasia"
 }
 
 variable "environment" {
