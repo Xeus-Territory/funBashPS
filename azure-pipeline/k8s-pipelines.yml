@@ -4,7 +4,7 @@ pool:
   name: linuxAgent
 
 stages:
-  - stage: terraform_plan_k8s
+  - stage: terraform_plan_aks
     jobs: 
       - job: terraform_plan
         steps:
@@ -52,15 +52,16 @@ stages:
                 TF_VAR_address_space: $(addressSpace)
                 TF_VAR_address_prefixes: $(addressPrefixes)
 
-  - stage: terraform_apply_k8s
-    dependsOn: [terraform_plan]
-    condition: succeeded('terraform_plan')
+  - stage: terraform_apply_aks
+    dependsOn: [terraform_plan_aks]
+    condition: succeeded('terraform_plan_aks')
     jobs: 
-      - deployment: terraform_apply
-        environment: $(environmentName)
-        strategy:
-          runOnce:
-            deploy:
+      # - deployment: terraform_apply_aks
+        # environment: $(environmentName)
+        # strategy:
+        #   runOnce:
+        #     deploy:
+            - job: 
               steps:
                   - task: TerraformInstaller@0
                     inputs:
