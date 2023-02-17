@@ -59,12 +59,13 @@ stages:
     dependsOn: [terraform_plan]
     condition: succeeded('terraform_plan')
     jobs: 
-      - deployment: terraform_destroy
-        environment: $(environmentName)
-        strategy:
-          runOnce:
-            deploy:
-              steps:
+      # - deployment: terraform_destroy
+      #   environment: $(environmentName)
+      #   strategy:
+      #     runOnce:
+      #       deploy:
+                - job: 
+                  steps:
                   - task: CmdLine@2
                     inputs:
                       script: |
