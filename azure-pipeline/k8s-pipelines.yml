@@ -46,7 +46,7 @@ stages:
               workingDirectory: $(workingDirectory)
               environmentServiceNameAzureRM: $(serviceConnection)
             env:
-              TF_VAR_resource_group_root_name: $(resourceGroupRoot)
+              TF_VAR_resource_group_root_name: $(resourceGroup)
               TF_VAR_resource_group_name: $(resourceGroupDev)  
               TF_VAR_container_registry_name: $(containerRegistry)
               TF_VAR_address_space: $(addressSpace)
