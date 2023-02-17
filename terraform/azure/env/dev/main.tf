@@ -5,6 +5,38 @@ resource "azurerm_resource_group" "main" {
   tags        = var.tags
 }
 
+module "network" {
+  source = "../../modules/networking"
+  resource_group_name = azurerm_resource_group.main.name
+  resource_group_location = azurerm_resource_group.main.location
+  environment = var.environment
+  tags = var.tags
+  address_space = var.address_space
+  address_prefixes = var.address_prefixes
+}
+
+module "aks" {
+    source = "../../modules/aks"    
+    resource_group_name                     = azurerm_resource_group.main.name
+    resource_group_location                 = azurerm_resource_group.main.location    
+    environment                             = var.environment
+    subnet_node_pools_id = module.network.subnet_id
+    tags                                    = var.tags
+    depends_on = [
+      module.network
+    ]
+}
+
+module "iam" {
+    source = "../../modules/iam"
+    container_registry_id = data.azurerm_container_registry.main.id
+    principal_id = module.aks.principal_id
+    depends_on = [
+      module.aks
+    ]
+}
+
+
 # module "iam" {
 #     source                  = "../modules/iam"
 #     resource_group_root_id  = data.azurerm_resource_group.root.id
@@ -72,14 +104,3 @@ resource "azurerm_resource_group" "main" {
 #         module.storage
 #     ]
 # }
-
-module "aks" {
-    source = "../../modules/aks"    
-    resource_group_name                     = azurerm_resource_group.main.name
-    resource_group_location                 = azurerm_resource_group.main.location    
-    environment                             = var.environment
-    tags                                    = var.tags    
-    container_registry_id                   = data.azurerm_container_registry.main.id
-    address_space                           = var.address_space    
-    address_prefixes                        = var.address_prefixes
-}

@@ -8,12 +8,13 @@ resource "azurerm_kubernetes_cluster" "main" {
   node_resource_group = "${var.resource_group_name}-k8s-infra"
   automatic_channel_upgrade = var.automatic_channel_upgrade
   http_application_routing_enabled = true
+  kubernetes_version = var.kubernetes_version
 
   default_node_pool {
     name       = var.default_node_pool_name
     node_count = var.node_count
     vm_size    = var.vm_size
-    vnet_subnet_id = azurerm_subnet.cluster.id
+    vnet_subnet_id = var.subnet_node_pools_id
   }
 
   identity {

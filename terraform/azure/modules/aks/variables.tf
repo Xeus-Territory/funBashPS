@@ -42,23 +42,13 @@ variable "automatic_channel_upgrade" {
   default = "stable"
 }
 
-variable "container_registry_id" {
+variable "kubernetes_version" {
   type = string
-  description = "ID of Container Registry"
+  description = "kubernetes version"
+  default = "1.24.9"
 }
 
-variable "address_space" {
-  type = list(string)
-  description = "Address space of Network"
-}
-
-variable "address_prefixes" {
-  type = list(string)
-  description = "Address prefixs of Subnet"  
-}
-
-variable "service_endpoints" {
-  type = list(string)
-  description = "Service endpoints of subnet"
-  default = [ "Microsoft.Storage" ]
+variable "subnet_node_pools_id" {
+  type = string
+  description = "Id of subnet using for node pools"
 }
