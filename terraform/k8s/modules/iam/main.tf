@@ -64,10 +64,15 @@ resource "azurerm_role_assignment" "container" {
   principal_id         = azurerm_user_assigned_identity.main.principal_id
 }
 
+
+# resource "azurerm_role_assignment" "k8s" {
+#   scope                 = var.resource_group_root_id
+#   role_definition_id   = azurerm_role_definition.container.role_definition_resource_id
+#   delegated_managed_identity_resource_id         = var.cluster_pricipal_id
+# }
+
 resource "azurerm_role_assignment" "storage" {
   scope                = var.resource_group_id
   role_definition_name = "Storage Blob Data Reader"
   principal_id         = azurerm_user_assigned_identity.main.principal_id
 }
-
-

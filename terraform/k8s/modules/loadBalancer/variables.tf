@@ -1,21 +1,13 @@
-variable "resource_group_root_id" {
-  type = string 
-  description = "Resource group Root ID"
-}
-
-variable "resource_group_id" {
-  type = string
-  description = "Resource group ID of Dev Environment"
-}
-
 variable "resource_group_name" {
   type = string
   description = "Resource group name of Dev Environment"
+  default = "dev"
 }
 
 variable "resource_group_location" {
   type = string
   description = "Resource group location of Dev Environment"
+  default = "southeastasia"
 }
 
 variable "environment" {
@@ -28,8 +20,3 @@ variable "tags" {
     description = "Resource tags"
     default = null
 }
-
-# variable "cluster_pricipal_id" {
-#   type = string 
-#   description = "Enviroment name for working"
-# }
