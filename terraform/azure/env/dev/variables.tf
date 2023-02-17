@@ -19,14 +19,14 @@ variable "container_registry_name" {
   description = "Name of Container Registry"
 }
 
-variable "source_image_name" {
-    type = string
-}
+# variable "source_image_name" {
+#     type = string
+# }
 
-variable "ssh_public_key_name" {
-  type = string
-  description = "Name Public SSH Key"
-}
+# variable "ssh_public_key_name" {
+#   type = string
+#   description = "Name Public SSH Key"
+# }
 
 variable "environment" {
     type = string 
@@ -43,15 +43,25 @@ variable "tags" {
     }
 }
 
-variable "blob_name" {
-    type = string 
-    description = "Name of Blob inside a Container of Storage Account"
-    default = "docker-compose.yaml"
+# variable "blob_name" {
+#     type = string 
+#     description = "Name of Blob inside a Container of Storage Account"
+#     default = "docker-compose.yaml"
+# }
+
+# variable "allowed_ips" {
+#     type = string
+#     description = "Name of Blob inside a Container of Storage Account"
+#     sensitive = true
+# }
+
+variable "address_space" {
+  type = list(string)
+  description = "Address space of Network"
 }
 
-variable "allowed_ips" {
-    type = string
-    description = "Name of Blob inside a Container of Storage Account"
-    sensitive = true
+variable "address_prefixes" {
+  type = list(string)
+  description = "Address prefixs of Subnet"  
 }
 

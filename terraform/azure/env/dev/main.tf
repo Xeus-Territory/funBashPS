@@ -76,12 +76,12 @@ resource "azurerm_resource_group" "main" {
 
 
 module "aks" {
-    source = "../modules/aks"
+    source = "../../modules/aks"
     resource_group_name                     = azurerm_resource_group.main.name
     resource_group_location                 = azurerm_resource_group.main.location
     environment                             = var.environment
     tags                                    = var.tags
-    # depends_on = [
-    #     module.storage
-    # ]
+    container_registry_id                   = data.azurerm_container_registry.main.id
+    address_space                           = var.address_space
+    address_prefixes                        = var.address_prefixes
 }
