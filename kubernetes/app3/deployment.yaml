@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app3
+  labels:
+    app: web-app3
+  namespace: devops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-app3
+  template:
+    metadata:
+      labels:
+        app: web-app3
+    spec:
+      containers:
+      - name: app3
+        image: devopsorient.azurecr.io/webpage8003:latest
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "0.1"
+        env:
+          - name: MESSAGE
+            value: 'App 3 !'
+          - name: PORT
+            value: '80'

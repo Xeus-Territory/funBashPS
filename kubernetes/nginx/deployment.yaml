@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-server
+  namespace: devops
+  labels:
+    app: web-server-nginx
+spec:
+  selector:
+    matchLabels:
+      app: web-server-nginx
+  template:
+    metadata:
+      labels:
+        app: web-server-nginx
+    spec:
+      containers:
+        - name: web-server
+          image: devopsorient.azurecr.io/nginx_alb:k8s
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "0.1"
+          volumeMounts:
+            - mountPath: /etc/nginx/site-enables
+              name: nginx-conf
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: nginx-conf
+            items:
+              - key: default.conf
+                path: default.conf
