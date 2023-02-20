@@ -54,13 +54,14 @@ stages:
 
   - stage: terraform_apply
     dependsOn: [terraform_plan]
-    condition: succeeded('terraform_plan)
+    condition: succeeded('terraform_plan')
     jobs:
-      - deployment: terraform_apply
-        environment: $(environmentName)
-        strategy:
-          runOnce:
-            deploy:
+      # - deployment: terraform_apply
+      #   environment: $(environmentName)
+      #   strategy:
+      #     runOnce:
+      #       deploy:
+            - job: 
               steps:
                 - task: TerraformInstaller@0
                   inputs:
