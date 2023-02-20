@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app4
+  labels:
+    app: web-app4
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-app4
+  template:
+    metadata:
+      labels:
+        app: web-app4
+    spec:
+      containers:
+      - name: app4
+        image: {{ .Values.deployment.image }}
+        ports:
+        - containerPort: {{ .Values.deployment.containerPort }}
+        resources:
+          limits: 
+            memory: {{ .Values.deployment.resources.memory }}
+            cpu: {{ .Values.deployment.resources.cpu }}
+        env:
+          - name: {{ .Values.env.name }}
+            value: {{ .Values.env.value }}
+          - name: {{ .Values.env.port.name }}
+            value: "80"

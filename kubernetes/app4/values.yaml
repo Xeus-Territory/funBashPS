@@ -1,0 +1,25 @@
+namespace: devops
+deployment: 
+  image: devopsorient.azurecr.io/webpage8004:latest
+  resources:
+    memory: "256Mi"
+    cpu: "0.1"
+  containerPort: 80
+env:
+  name: MESSAGE
+  value: 'App 4 !'
+  port:
+    name: PORT
+    value: '80'
+
+service: 
+  protocol: TCP
+  namespace: devops
+  servicePort: 80
+  serviceTagetPort: 80
+
+ports:
+- name: app4
+  protocol: TCP
+  port: 80
+  targetPort: 80
