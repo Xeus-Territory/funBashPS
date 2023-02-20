@@ -1,0 +1,6 @@
+{
+    "yaml.schemas": {
+        "kubernetes://schema/apps/v1@deployment": "file:///home/xeusnguyen/Infrastructure/kubernetes/app1/template/deployment.yaml",
+        "https://json.schemastore.org/helmfile.json": "file:///home/xeusnguyen/Infrastructure/kubernetes/app1/template/service.yaml"
+    }
+}

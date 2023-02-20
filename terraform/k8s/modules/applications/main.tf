@@ -1,10 +1,10 @@
-resource "helm_release" "common" {
-  name = "common-resources"
+resource "helm_release" "main" {
+    name = "app1"
+    
+    chart = "${dirname(dirname(dirname(dirname(abspath(path.module)))))}/kubernetes/app1/"
 
-  chart      = "../../../../kubernetes/common"
-
-  set {
-    name  = "service.type"
-    value = "ClusterIP"
-  }
+    set {
+        name  = "service.type"
+        value = "ClusterIP"
+    }
 }
