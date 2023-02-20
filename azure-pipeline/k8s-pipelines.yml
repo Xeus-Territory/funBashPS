@@ -20,7 +20,7 @@ stages:
               terraformVersion: "latest"
 
           - task: TerraformTaskV3@3
-            displayName: "Terraform Init"
+            displayName: "Terraform init"
             inputs:
               provider: "azurerm"
               command: "init"
@@ -45,16 +45,10 @@ stages:
               command: "plan"
               workingDirectory: $(workingDirectory)
               environmentServiceNameAzureRM: $(serviceConnection)
-            env:
-              TF_VAR_resource_group_root_name: $(resourceGroup)
-              TF_VAR_resource_group_name: $(resourceGroupDev)
-              TF_VAR_container_registry_name: $(containerRegistry)
-              TF_VAR_address_space: $(addressSpace)
-              TF_VAR_address_prefixes: $(addressPrefixes)
 
   - stage: terraform_apply
     dependsOn: [terraform_plan]
-    condition: succeeded('terraform_plan)
+    condition: succeeded('terraform_plan')
     jobs:
       - deployment: terraform_apply
         environment: $(environmentName)
@@ -86,9 +80,3 @@ stages:
                     commandOptions: "-auto-approve"
                     workingDirectory: $(workingDirectory)
                     environmentServiceNameAzureRM: $(serviceConnection)
-                  env:
-                    TF_VAR_resource_group_root_name: $(resourceGroup)
-                    TF_VAR_resource_group_name: $(resourceGroupDev)
-                    TF_VAR_container_registry_name: $(containerRegistry)
-                    TF_VAR_address_space: $(addressSpace)
-                    TF_VAR_address_prefixes: $(addressPrefixes)
