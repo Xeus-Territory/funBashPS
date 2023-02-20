@@ -1,11 +1,11 @@
 trigger: none
 
-pool: 
+pool:
   name: linuxAgent
 
 stages:
   - stage: terraform_plan_ingress
-    jobs: 
+    jobs:
       - job: terraform_plan
         steps:
           - task: CmdLine@2
@@ -17,73 +17,72 @@ stages:
 
           - task: TerraformInstaller@0
             inputs:
-              terraformVersion: 'latest'
+              terraformVersion: "latest"
 
           - task: TerraformTaskV3@3
-            displayName: 'Terraform init'
+            displayName: "Terraform init"
             inputs:
-              provider: 'azurerm'
-              command: 'init'
+              provider: "azurerm"
+              command: "init"
               workingDirectory: $(workingDirectory)
               backendServiceArm: $(serviceConnection)
               backendAzureRmResourceGroupName: $(resourceGroup)
               backendAzureRmStorageAccountName: $(storageAccount)
-              backendAzureRmContainerName:  $(storageContainer)
+              backendAzureRmContainerName: $(storageContainer)
               backendAzureRmKey: $(storageKey)
-              
+
           - task: TerraformTaskV3@3
             displayName: Terraform Validate
             inputs:
-              provider: 'azurerm'
-              command: 'validate'
+              provider: "azurerm"
+              command: "validate"
               workingDirectory: $(workingDirectory)
 
           - task: TerraformTaskV3@3
             displayName: Terraform Plan
             inputs:
-              provider: 'azurerm'
-              command: 'plan'
+              provider: "azurerm"
+              command: "plan"
               workingDirectory: $(workingDirectory)
               environmentServiceNameAzureRM: $(serviceConnection)
             env:
               TF_VAR_cluster_name: $(clusterName)
-              TF_VAR_cluster_resource_group : $(clusterResourceGroup)
+              TF_VAR_cluster_resource_group: $(clusterResourceGroup)
 
   - stage: terraform_apply_ingress
     dependsOn: [terraform_plan_ingress]
     condition: succeeded('terraform_plan_ingress')
-    jobs: 
-      # - deployment: terraform_apply_ingress
-        # environment: $(environmentName)
-        # strategy:
-        #   runOnce:
-        #     deploy:
-            - job: 
+    jobs:
+      - deployment: terraform_apply_ingress
+        environment: $(environmentName)
+        strategy:
+          runOnce:
+            deploy:
               steps:
-                  - task: TerraformInstaller@0
-                    inputs:
-                      terraformVersion: 'latest'
-        
-                  - task: TerraformTaskV3@3
-                    displayName: 'Terraform Init'
-                    inputs:
-                      provider: 'azurerm'
-                      command: 'init'
-                      workingDirectory: $(workingDirectory)
-                      backendServiceArm: $(serviceConnection)
-                      backendAzureRmResourceGroupName: $(resourceGroup)
-                      backendAzureRmStorageAccountName: $(storageAccount)
-                      backendAzureRmContainerName:  $(storageContainer)
-                      backendAzureRmKey: $(storageKey)
-        
-                  - task: TerraformTaskV3@3
-                    displayName: Terraform Apply
-                    inputs:
-                      provider: 'azurerm'
-                      command: 'apply'
-                      commandOptions: '-auto-approve'
-                      workingDirectory: $(workingDirectory)
-                      environmentServiceNameAzureRM: $(serviceConnection)
-                    env:
-                      TF_VAR_cluster_name: $(clusterName)
-                      TF_VAR_cluster_resource_group : $(clusterResourceGroup)
+                - task: TerraformInstaller@0
+                  inputs:
+                    terraformVersion: "latest"
+
+                - task: TerraformTaskV3@3
+                  displayName: "Terraform Init"
+                  inputs:
+                    provider: "azurerm"
+                    command: "init"
+                    workingDirectory: $(workingDirectory)
+                    backendServiceArm: $(serviceConnection)
+                    backendAzureRmResourceGroupName: $(resourceGroup)
+                    backendAzureRmStorageAccountName: $(storageAccount)
+                    backendAzureRmContainerName: $(storageContainer)
+                    backendAzureRmKey: $(storageKey)
+
+                - task: TerraformTaskV3@3
+                  displayName: Terraform Apply
+                  inputs:
+                    provider: "azurerm"
+                    command: "apply"
+                    commandOptions: "-auto-approve"
+                    workingDirectory: $(workingDirectory)
+                    environmentServiceNameAzureRM: $(serviceConnection)
+                  env:
+                    TF_VAR_cluster_name: $(clusterName)
+                    TF_VAR_cluster_resource_group: $(clusterResourceGroup)
