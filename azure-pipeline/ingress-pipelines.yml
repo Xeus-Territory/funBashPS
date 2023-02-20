@@ -45,9 +45,6 @@ stages:
               command: "plan"
               workingDirectory: $(workingDirectory)
               environmentServiceNameAzureRM: $(serviceConnection)
-            env:
-              TF_VAR_cluster_name: $(clusterName)
-              TF_VAR_cluster_resource_group: $(clusterResourceGroup)
 
   - stage: terraform_apply_ingress
     dependsOn: [terraform_plan_ingress]
@@ -83,6 +80,3 @@ stages:
                     commandOptions: "-auto-approve"
                     workingDirectory: $(workingDirectory)
                     environmentServiceNameAzureRM: $(serviceConnection)
-                  env:
-                    TF_VAR_cluster_name: $(clusterName)
-                    TF_VAR_cluster_resource_group: $(clusterResourceGroup)
