@@ -13,7 +13,7 @@ terraform {
       resource_group_name = "DevOpsIntern"
       storage_account_name = "orientdevopsintern"
       container_name = "tfstate"
-      key = "nguyen-helm.tfstate"
+      key = "k8s-app1.tfstate"
   }
 }
 

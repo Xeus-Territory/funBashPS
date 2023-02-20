@@ -1,9 +1,10 @@
-resource "helm_release" "app4" {
-  name = "app4"
-  chart      = "${dirname(dirname(dirname(dirname(abspath(path.module)))))}/kubernetes/app4"
+resource "helm_release" "main" {
+    name = "app1"
+    
+    chart = "${dirname(dirname(dirname(dirname(abspath(path.module)))))}/kubernetes/app1/"
 
-  set {
-    name  = "service.type"
-    value = "ClusterIP"
-  }
+    set {
+        name  = "service.type"
+        value = "ClusterIP"
+    }
 }

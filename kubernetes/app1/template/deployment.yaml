@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app1
+  labels:
+    app: web-app1
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-app1
+  template:
+    metadata:
+      labels:
+        app: web-app1
+    spec:
+      containers:
+      - name: app1
+        image: {{ .Values.deployment.image.name }}
+        ports:
+        - containerPort: {{ .Values.deployment.containerPort }}
+        resources:
+          limits: 
+            memory: {{ .Values.deployment.image.resources.memory }}
+            cpu: {{ .Values.deployment.image.resources.cpu }}
+        env:
+          - name: {{ .Values.env.name }}
+            value: {{ .Values.env.value }}
+          - name: {{ .Values.env.port.name }}
+            value: {{ .Values.env.port.value }}
