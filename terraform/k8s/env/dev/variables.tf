@@ -1,9 +1,3 @@
-variable "environment" {
-    type = string
-    description = "environment of using this module"
-    default = "dev"
-}
-
 variable "cluster_name" {
     type = string
     description = "Name of the cluster"
@@ -14,4 +8,14 @@ variable "cluster_resource_group" {
     type = string
     description = "Where the cluster is existence"
     default = "dev-environment"
+}
+
+variable "namespace_deployment" {
+    type = string
+    description = "namespace for k8s deployment part"
+}
+
+variable "namespace_ingress" {
+    type = string
+    description = "Namespace for k8s common part"
 }

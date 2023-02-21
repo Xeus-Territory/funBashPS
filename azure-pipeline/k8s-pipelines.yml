@@ -45,6 +45,9 @@ stages:
               command: "plan"
               workingDirectory: $(workingDirectory)
               environmentServiceNameAzureRM: $(serviceConnection)
+            env:
+              TF_VAR_namespace_deployment: $(namespaceDeployment)
+              TF_VAR_namespace_ingress: $(namespaceIngress)
 
   - stage: terraform_apply
     dependsOn: [terraform_plan]
@@ -80,3 +83,6 @@ stages:
                     commandOptions: "-auto-approve"
                     workingDirectory: $(workingDirectory)
                     environmentServiceNameAzureRM: $(serviceConnection)
+                  env:
+                    TF_VAR_namespace_deployment: $(namespaceDeployment)
+                    TF_VAR_namespace_ingress: $(namespaceIngress)
