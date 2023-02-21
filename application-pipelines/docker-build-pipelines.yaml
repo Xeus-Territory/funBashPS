@@ -6,12 +6,28 @@ pr:
 pool:
   name: linuxAgent
 
+variables:
+  GIT_COMMIT: $(Build.SourceVersion)
+  GIT_BRANCH: $(Build.SourceBranch) 
+
 stages:
-  - stage: build-image
+  - stage: install-docker
     jobs:
-      - job: build-image
+      - job: install-docker
         steps:
-          - task: 
+          - task: DockerInstaller@0
+            inputs:
+              dockerVersion: '17.09.0-ce'
+              releaseType: stable
+      - job: validate-docker
+        steps:
+          - task: CmdLine@2
+            inputs:
+              script: |
+                sudo chmod 666 /var/run/docker.sock
+                echo $GIT_COMMIT
+                echo $GIT_BRANCH
+                
 
 
 
