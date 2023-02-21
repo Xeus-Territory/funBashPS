@@ -17,15 +17,15 @@ spec:
     spec:
       containers:
       - name: app1
-        image: {{ .Values.deployment.image.name }}
+        image: {{ .Values.image.name }}
         ports:
-        - containerPort: {{ .Values.deployment.containerPort }}
+        - containerPort: {{ .Values.image.containerPort }}
         resources:
           limits: 
-            memory: {{ .Values.deployment.image.resources.memory }}
-            cpu: {{ .Values.deployment.image.resources.cpu }}
+            memory: {{ .Values.resources.memory }}
+            cpu: {{ .Values.resources.cpu }}
         env:
-          - name: {{ .Values.env.name }}
-            value: {{ .Values.env.value }}
-          - name: {{ .Values.env.port.name }}
-            value: {{ .Values.env.port.value }}
+          - name: MESSAGE
+            value: {{ .Values.env.valueMessage }}
+          - name: PORT
+            value: {{ .Values.env.valuePort }}
