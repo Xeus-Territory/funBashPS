@@ -1,0 +1,18 @@
+pr:
+  branches:
+    include:
+      - feature/*
+
+pool:
+  name: linuxAgent
+
+stages:
+  - stage: build-image
+    jobs:
+      - job: build-image
+        steps:
+          - task: 
+
+
+
+
