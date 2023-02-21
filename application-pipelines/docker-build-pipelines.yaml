@@ -1,5 +1,3 @@
-trigger:
-  - feature/pipeline-build-image
 pr:
   branches:
     include:
@@ -13,15 +11,15 @@ variables:
   GIT_BRANCH: $(Build.SourceBranch) 
 
 stages:
-  - stage: install-docker
+  - stage: install_docker
     jobs:
-      - job: install-docker
+      - job: install_docker
         steps:
           - task: DockerInstaller@0
             inputs:
               dockerVersion: '17.09.0-ce'
               releaseType: stable
-      - job: validate-docker
+      - job: validate_docker
         steps:
           - task: CmdLine@2
             inputs:
