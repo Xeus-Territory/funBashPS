@@ -1,9 +1,5 @@
-trigger:
-  none
 pr:
-  branches:
-    include:
-      - feature/*
+  - feature/*
 
 pool:
   name: linuxAgent
