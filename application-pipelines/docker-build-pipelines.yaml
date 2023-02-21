@@ -1,3 +1,5 @@
+trigger:
+  - feature/pipeline-build-image
 pr:
   branches:
     include:
