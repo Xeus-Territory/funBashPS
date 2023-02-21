@@ -1,31 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web-app3
+  name: {{ .Chart.Name }}
   labels:
-    app: web-app3
+    app: {{ .Chart.Name }}
   namespace: {{ .Values.namespace }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicasCount }}
   selector:
     matchLabels:
-      app: web-app3
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: web-app3
+        app: {{ .Chart.Name }}
     spec:
       containers:
-      - name: app3
-        image: {{ .Values.deployment.image.name }}
+      - name: {{ .Values.image.name }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         ports:
-        - containerPort: 80
+        - containerPort: {{ .Values.image.containerPort }}
         resources:
-          limits:
-            memory: "256Mi"
-            cpu: "0.1"
+          limits: 
+            memory: {{ .Values.resources.memory }}
+            cpu: {{ .Values.resources.cpu }}
         env:
           - name: MESSAGE
-            value: 'App 3 !'
+            value: '{{ .Values.env.valueMessage }}'
           - name: PORT
-            value: '80'
+            value: '{{ .Values.env.valuePort }}'

@@ -1,0 +1,31 @@
+# general parameters
+namespace: devops
+# config parameters
+config:
+  name: nginx-conf
+# deployment parameters
+deployment:
+  replicasCount: 1
+  image:
+    name: web-server
+    repository: devopsorient.azurecr.io/nginx_alb
+    tag: k8s
+    containerPortHTTP: 80
+    containerPortHTTPS: 443
+  resources:
+    memory: "256Mi"
+    cpu: "0.1"
+  volumeMounts:
+    name: nginx-conf
+    mountPath: /etc/nginx/site-enables
+  volumes:
+    items:
+      key: default.conf
+      path: default.conf
+# service parameters
+service:
+  name: web-server
+  protocol: TCP
+  portExpose: 80
+  portTarget: 80
+

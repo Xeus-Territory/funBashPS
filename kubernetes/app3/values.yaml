@@ -1,19 +1,21 @@
+# general parameters
 namespace: devops
-deployment: 
-  image:
-    name: devopsorient.azurecr.io/webpage8003:latest
-    resources:
-      limits:
-        memory: "256Mi"
-        cpu: "0.1"
-    env:
-          - name: MESSAGE
-            value: 'App 3 !'
-          - name: PORT
-            value: '80'
+# deployment parameters
+replicasCount: 1
+image:
+  name: app3
+  repository: devopsorient.azurecr.io/webpage8003
+  tag: latest
   containerPort: 80
-service: 
+resources:
+  memory: "256Mi"
+  cpu: "0.1"
+env:
+  valueMessage: "App 3 !"
+  valuePort: "80"
+# service parameters
+service:
   protocol: TCP
-  namespace: devops
-  servicePort: 80
-  serviceTagetPort: 80
+  portExpose: 80
+  portTarget: 80
+  

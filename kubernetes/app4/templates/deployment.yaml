@@ -1,31 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web-app4
+  name: {{ .Chart.Name }}
   labels:
-    app: web-app4
+    app: {{ .Chart.Name }}
   namespace: {{ .Values.namespace }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicasCount }}
   selector:
     matchLabels:
-      app: web-app4
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: web-app4
+        app: {{ .Chart.Name }}
     spec:
       containers:
-      - name: app4
-        image: {{ .Values.deployment.image }}
+      - name: {{ .Values.image.name }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         ports:
-        - containerPort: {{ .Values.deployment.containerPort }}
+        - containerPort: {{ .Values.image.containerPort }}
         resources:
           limits: 
-            memory: {{ .Values.deployment.resources.memory }}
-            cpu: {{ .Values.deployment.resources.cpu }}
+            memory: {{ .Values.resources.memory }}
+            cpu: {{ .Values.resources.cpu }}
         env:
-          - name: {{ .Values.env.name }}
-            value: {{ .Values.env.value }}
-          - name: {{ .Values.env.port.name }}
-            value: "80"
+          - name: MESSAGE
+            value: '{{ .Values.env.valueMessage }}'
+          - name: PORT
+            value: '{{ .Values.env.valuePort }}'
