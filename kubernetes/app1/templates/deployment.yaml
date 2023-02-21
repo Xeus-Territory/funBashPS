@@ -26,6 +26,6 @@ spec:
             cpu: {{ .Values.resources.cpu }}
         env:
           - name: MESSAGE
-            value: {{ .Values.env.valueMessage }}
+            value: '{{ .Values.env.valueMessage }}'
           - name: PORT
-            value: {{ .Values.env.valuePort }}
+            value: '{{ .Values.env.valuePort }}'
