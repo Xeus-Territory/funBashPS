@@ -1,5 +1,9 @@
 pr:
-  - feature/*
+  branches:
+    include:
+      - "feature/*"
+    exclude:
+      - "feature/pipeline-build-image"
 
 pool:
   name: linuxAgent
