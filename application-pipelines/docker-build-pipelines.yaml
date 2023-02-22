@@ -17,20 +17,19 @@ stages:
   - stage: eslint
     displayName: Test Source Code
     jobs:
-      - job: npm_install
-        displayName: Install Package
+      - job: install
+        displayName: Install NodeJS && Test Code
         steps:
-        - bash: |
-            cd src/ || exit
-            npm install
-      - job: test
-        displayName: Test Source
-        dependsOn: ['npm_install']
-        condition: succeeded('npm_install')
-        steps:
-        - bash: |
-            cd src/ || exit
-            npm run lint
+          - task: NodeTool@0
+            displayName: Install NodeJS
+            inputs:
+              versionSpec: '16.15.0'
+          - bash: |
+              cd src/ || exit
+              npm install
+              npm run lint
+            displayName: Test Code
+
   - stage: docker
     dependsOn: ['eslint']
     condition: succeeded('eslint')
