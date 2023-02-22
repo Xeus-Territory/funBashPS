@@ -1,3 +1,5 @@
+trigger: none
+
 pr:
   branches:
     include:
@@ -17,19 +19,16 @@ stages:
     jobs:
       - job: install_docker
         steps:
-          - task: DockerInstaller@0
-            inputs:
-              dockerVersion: '17.09.0-ce'
-              releaseType: stable
-      - job: validate_docker
+          - bash: |
+              sudo apt install docker-compose -y
+              docker --version
+      - job: build_image
+        dependsOn: ['install_docker']
+        condition: succeeded('install_docker')
         steps:
-          - task: CmdLine@2
-            inputs:
-              script: |
-                echo $GIT_COMMIT
-                echo $GIT_BRANCH
-                
-
-
-
-
+          - bash: |
+              branchName="$(echo $GIT_BRANCH | cut -d '/' -f 3-)"
+              cp -r src $(workingDirectory) || exit
+              cd $(workingDirectory) || exit
+              sudo docker build -t $(urlRegistry)/$(appName)/$branchName:$GIT_COMMIT -f Dockerfile.web .
+              sudo docker image list
