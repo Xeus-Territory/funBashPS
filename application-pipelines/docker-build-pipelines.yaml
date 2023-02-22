@@ -10,24 +10,45 @@ pool:
   name: linuxAgent
 
 variables:
-  GIT_COMMIT: $(Build.SourceVersion)
-  GIT_BRANCH: $(Build.SourceBranch) 
+  commit: $(Build.SourceVersion)
+  branchname: $(Build.SourceBranchName) 
 
 stages:
-  - stage: install_docker
+  - stage: eslint
+    displayName: Test Source Code
+    jobs:
+      - job: npm_install
+        displayName: Install Package
+        steps:
+        - bash: |
+            cd src/ || exit
+            npm install
+      - job: test
+        displayName: Test Source
+        dependsOn: ['npm_install']
+        condition: succeeded('npm_install')
+        steps:
+        - bash: |
+            cd src/ || exit
+            npm run lint
+  - stage: docker
+    dependsOn: ['eslint']
+    condition: succeeded('eslint')
+    displayName: Docker Build
     jobs:
       - job: install_docker
+        displayName: Install Docker
         steps:
           - bash: |
               sudo apt install docker-compose -y
               docker --version
       - job: build_image
+        displayName: Build Docker Image
         dependsOn: ['install_docker']
         condition: succeeded('install_docker')
         steps:
           - bash: |
-              branchName="$(echo $GIT_BRANCH | cut -d '/' -f 3-)"
               cp -r src $(workingDirectory) || exit
               cd $(workingDirectory) || exit
-              sudo docker build -t $(urlRegistry)/$(appName)/$branchName:$GIT_COMMIT -f Dockerfile.web .
+              sudo docker build -t $(urlRegistry)/$(appName)/$(branchname):$(commit) -f Dockerfile.web .
               sudo docker image list
