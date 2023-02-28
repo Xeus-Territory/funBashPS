@@ -1,3 +1,8 @@
+variable "storage_account_name" {
+  type = string 
+  description = "Storage Account of root Environment"
+}
+
 variable "environment" {
     type = string 
     description = "Enviroment name for working"

@@ -11,11 +11,13 @@ resources:
   memory: "256Mi"
   cpu: "0.1"
 env:
-  valueMessage: "App 2 !"
+  valueMessage: "App 2 "
   valuePort: "80"
+  secret: mysecret
 # service parameters
 service:
   protocol: TCP
   portExpose: 80
   portTarget: 80
-  
+
+serviceAccountName: service-account-1

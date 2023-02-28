@@ -29,13 +29,20 @@ module "aks" {
 
 module "iam" {
     source = "../../modules/iam"
+    resource_group_root_id = data.azurerm_resource_group.root.id
     container_registry_id = data.azurerm_container_registry.main.id
+    storage_account_id = data.azurerm_storage_account.main.id 
     principal_id = module.aks.principal_id
+    cluster_id  = module.aks.cluster_id
     depends_on = [
       module.aks
     ]
 }
 
+module "storage" {
+  source = "../../modules/storageAccount"
+  storage_account_name = data.azurerm_storage_account.main.name
+}
 
 # module "iam" {
 #     source                  = "../modules/iam"

@@ -1,4 +1,4 @@
-# Get the resource backend from the Private Storage backend
+#Get the resource backend from the Private Storage backend
 terraform {
   backend "azurerm" {
       resource_group_name = var.resourceGroup
@@ -6,10 +6,14 @@ terraform {
       container_name = var.storageContainer
       key = var.storageBlob
   }
+  required_providers {
+      azurerm = {
+        source = "hashicorp/azurerm"
+        version = "=3.43.0"
+      }
+  }
 }
-
 provider "azurerm" {
-  version = "3.43.0"
   features{}
 }
 

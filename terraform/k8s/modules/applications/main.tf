@@ -3,12 +3,22 @@ resource "kubernetes_namespace" "deployment" {
       name = var.metadata-namespace
     }
 }
+
+resource "helm_release" "rbac" {
+    name = "rbac"
+    namespace = kubernetes_namespace.deployment.metadata[0].name
+    chart = "${dirname(dirname(dirname(dirname(abspath(path.module)))))}/kubernetes/rbac/"
+    depends_on = [
+      helm_release.secret
+    ]
+}
+
 resource "helm_release" "app1" {
     name = "app1"
     namespace = kubernetes_namespace.deployment.metadata[0].name
     chart = "${dirname(dirname(dirname(dirname(abspath(path.module)))))}/kubernetes/app1/"
     depends_on = [
-      kubernetes_namespace.deployment
+      helm_release.rbac
     ]
 }
 
@@ -17,7 +27,7 @@ resource "helm_release" "app2" {
     namespace = kubernetes_namespace.deployment.metadata[0].name
     chart = "${dirname(dirname(dirname(dirname(abspath(path.module)))))}/kubernetes/app2/"
     depends_on = [
-      kubernetes_namespace.deployment
+      helm_release.rbac
     ]
 }
 
@@ -26,7 +36,7 @@ resource "helm_release" "app3" {
     namespace = kubernetes_namespace.deployment.metadata[0].name
     chart = "${dirname(dirname(dirname(dirname(abspath(path.module)))))}/kubernetes/app3/"
     depends_on = [
-      kubernetes_namespace.deployment
+      helm_release.rbac
     ]
 }
 
@@ -35,14 +45,14 @@ resource "helm_release" "app4" {
     namespace = kubernetes_namespace.deployment.metadata[0].name    
     chart = "${dirname(dirname(dirname(dirname(abspath(path.module)))))}/kubernetes/app4/"
     depends_on = [
-      kubernetes_namespace.deployment
+      helm_release.rbac
     ]
 }
 
 resource "helm_release" "nginx" {
     name = "web-server"
     namespace = kubernetes_namespace.deployment.metadata[0].name
-    chart = "${dirname(dirname(dirname(dirname(abspath(path.module)))))}/kubernetes/nginx/"
+    chart = "${dirname(dirname(dirname(dirname(abspath(path.module)))))}/kubernetes/nginx-persistent/"
     depends_on = [
       helm_release.app1, helm_release.app2, helm_release.app3, helm_release.app4, kubernetes_namespace.deployment
     ]

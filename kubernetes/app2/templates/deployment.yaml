@@ -15,6 +15,7 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
       containers:
       - name: {{ .Values.image.name }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
@@ -29,3 +30,6 @@ spec:
             value: '{{ .Values.env.valueMessage }}'
           - name: PORT
             value: '{{ .Values.env.valuePort }}'
+        envFrom: 
+        - secretRef: 
+            name: {{ .Values.env.secret }}

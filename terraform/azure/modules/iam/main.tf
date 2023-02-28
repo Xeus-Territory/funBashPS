@@ -78,3 +78,26 @@ resource "azurerm_role_assignment" "k8s" {
   skip_service_principal_aad_check = true
 }
 
+resource "azurerm_role_definition" "k8s-fileshare" {
+  name        = "Read FileShares"
+  scope       = var.resource_group_root_id
+  description = "This is a custom role created via Terraform"
+  permissions {
+    actions     = [ "Microsoft.Storage/storageAccounts/fileServices/shares/action",
+                    "Microsoft.Storage/storageAccounts/fileServices/shares/delete",
+                    "Microsoft.Storage/storageAccounts/fileServices/shares/read",
+                    "Microsoft.Storage/storageAccounts/fileServices/shares/lease/action",
+                    "Microsoft.Storage/storageAccounts/fileServices/shares/write",
+                    "Microsoft.Storage/storageAccounts/listKeys/action" ]
+    not_actions = []
+    data_actions = []
+    not_data_actions = []
+  }                
+}
+
+resource "azurerm_role_assignment" "k8s-fileshare" {
+  principal_id                     = var.cluster_id
+  scope                            = var.storage_account_id
+  role_definition_id               = azurerm_role_definition.k8s-fileshare.role_definition_resource_id
+  skip_service_principal_aad_check = true
+}

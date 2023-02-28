@@ -1,7 +1,7 @@
-# variable "resource_group_root_id" {
-#   type = string 
-#   description = "Resource group Root ID"
-# }
+variable "resource_group_root_id" {
+  type = string 
+  description = "Resource group Root ID"
+}
 
 # variable "resource_group_id" {
 #   type = string
@@ -34,7 +34,16 @@ variable "container_registry_id" {
   description = "ID of Container Registry"
 }
 
+variable "storage_account_id" {
+  type = string 
+  description = "ID of Storage Account"
+}
+
 variable "principal_id" {
   type = string
   description = "principal ID of cluster"
+}
+
+variable "cluster_id" {
+  type = string 
 }
