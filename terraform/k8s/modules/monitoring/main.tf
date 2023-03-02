@@ -10,35 +10,43 @@ resource "helm_release" "prometheus" {
     repository = "https://prometheus-community.github.io/helm-charts"
     chart = "kube-prometheus-stack"
 
-    set {
-      name = "grafana.ingress.enabled"
-      value = "true"
-    }
-
-    set {
-      name = "grafana.ingress.ingressClassName"
-      value = "nginx"
-    }
-
-    set {
-      name = "grafana.persistence.enabled"
-      value = "true"
-    }
-
-    set {
-      name = "grafana.persistence.type"
-      value = "pvc"
-    }
-
-    set {
-      name = "grafana.persistence.storageClassName"
-      value = "grafana-data"
-    }
-
-    set {
-      name = "grafana.persistence.size"
-      value = "2Gi"
-    } 
+    values = [ 
+      <<EOF
+        kubeEtcd:
+          enabled: false
+        kubeControllerManager:
+          enabled: false
+        kubeScheduler:
+          enabled: false
+        kubeProxy:
+          enabled: false
+        alertmanager:
+          alertmanagerSpec:
+            storage:
+              volumeClaimTemplate:
+                spec:
+                  storageClassName: alert-data
+                  accessModes: ["ReadWriteOnce"]
+                  resources:
+                    requests:
+                      storage: 1Gi
+        
+        prometheus:
+          prometheusSpec:
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  storageClassName: prometheus-data
+                  accessModes: ["ReadWriteOnce"]
+                  resources:
+                    requests:
+                      storage: 1Gi
+        grafana:
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+      EOF
+     ]
 
     depends_on = [
       kubernetes_namespace.monitoring
